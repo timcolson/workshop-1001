@@ -29,12 +29,6 @@ class Recipe:
         return f"https://static.photos/food/200x200/{self.index}"
 
 
-# Load recipe data at startup
-with open('data/recipes.json', 'r') as f:
-    recipe_data = json.load(f)
-    RECIPES = [Recipe(data, idx) for idx, data in enumerate(recipe_data)]
-
-
 def get_page_data(page):
     """Get recipe list data for a given page"""
     page = max(1, page)
@@ -75,20 +69,14 @@ def recipe_detail(recipe_id):
         abort(404)
 
     recipe = RECIPES[recipe_id]
+
     return render_template('recipe.html', recipe=recipe)
 
 
-@app.errorhandler(404)
-def page_not_found(e):
-    """404 error handler"""
-    return render_template('404.html'), 404
-
-
 class Status304Filter(logging.Filter):
-    """Filter out 304 not modified responses from logs"""
+    """Filter out 304 (not modified) to simplify log"""
     def filter(self, record):
-        # Check if '304' appears in the log message
-        # Werkzeug formats as: "GET /static/style.css HTTP/1.1" 304 -
+        # Werkzeug format: "GET /static/style.css HTTP/1.1" 304 -
         return '304' not in record.getMessage()
 
 # Apply the filter
@@ -97,8 +85,12 @@ logger.addFilter(Status304Filter())
 
 if __name__ == '__main__':
     print("🍳 Recipe Server starting on http://localhost:8000")
-    print(f"📚 Loaded {len(RECIPES)} recipes")
+    
+    # Load recipe data at startup
+    with open('data/recipes.json', 'r') as f:
+        recipe_data = json.load(f)
+        RECIPES = [Recipe(data, idx) for idx, data in enumerate(recipe_data)]
+        print(f"📚 Loaded {len(RECIPES)} recipes")
+
     print("Press Ctrl+C to stop the server\n")
-
-
     app.run(debug=True, port=8000)
