@@ -9,6 +9,7 @@ from flask import Flask, render_template, abort, request
 
 app = Flask(__name__)
 
+RECIPES_PER_PAGE = 10
 
 class Recipe:
     """Recipe data model"""
@@ -31,8 +32,6 @@ class Recipe:
 with open('data/recipes.json', 'r') as f:
     recipe_data = json.load(f)
     RECIPES = [Recipe(data, idx) for idx, data in enumerate(recipe_data)]
-
-RECIPES_PER_PAGE = 10
 
 
 def get_page_data(page):
