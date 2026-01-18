@@ -1,29 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>{% block title %}Basic Recipe Browser{% endblock %}</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #333; }
-        .recipe-list { list-style: none; padding: 0; }
-        .recipe-list li { padding: 10px; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 15px; }
-        .recipe-list img { flex-shrink: 0; }
-        .recipe-list a { text-decoration: none; color: #0066cc; font-size: 18px; }
-        .recipe-list a:hover { text-decoration: underline; }
-        .pagination { margin: 20px 0; text-align: center; }
-        .pagination a { margin: 0 5px; padding: 5px 10px; border: 1px solid #ddd; text-decoration: none; color: #0066cc; }
-        .pagination a:hover { background: #f0f0f0; }
-        .pagination .current { font-weight: bold; background: #0066cc; color: white; padding: 5px 10px; }
-        .back-link { margin-bottom: 20px; }
-        .back-link a { text-decoration: none; color: #0066cc; }
-        .recipe-meta { color: #666; margin-bottom: 20px; }
-        .section { margin: 20px 0; }
-        .section h2 { color: #555; font-size: 20px; }
-        .ingredients { list-style: disc; padding-left: 20px; }
-        .method { list-style: decimal; padding-left: 20px; }
-        .method li { margin: 10px 0; }
-        .source { margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     {% block content %}{% endblock %}

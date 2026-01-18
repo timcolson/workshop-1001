@@ -35,12 +35,9 @@ with open('data/recipes.json', 'r') as f:
 RECIPES_PER_PAGE = 10
 
 
-@app.route('/')
-def home():
-    """Home page with recipe list and pagination"""
-    page = int(request.args.get('page', 1))
+def get_page_data(page):
+    """Get recipe list data for a given page"""
     page = max(1, page)
-
     total_recipes = len(RECIPES)
     total_pages = (total_recipes + RECIPES_PER_PAGE - 1) // RECIPES_PER_PAGE
     page = min(page, total_pages)
@@ -49,13 +46,26 @@ def home():
     end_idx = start_idx + RECIPES_PER_PAGE
     page_recipes = RECIPES[start_idx:end_idx]
 
-    return render_template(
-        'home.html',
-        page_recipes=page_recipes,
-        page=page,
-        total_pages=total_pages,
-        total_recipes=total_recipes
-    )
+    return {
+        'page_recipes': page_recipes,
+        'page': page,
+        'total_pages': total_pages,
+        'total_recipes': total_recipes
+    }
+
+
+@app.route('/')
+def home():
+    """Home page with recipe list and pagination"""
+    page = int(request.args.get('page', 1))
+    return render_template('home.html', **get_page_data(page))
+
+
+@app.route('/recipes')
+def list_recipes():
+    """Recipe list endpoint for pagination"""
+    page = int(request.args.get('page', 1))
+    return render_template('home.html', **get_page_data(page))
 
 
 @app.route('/recipe/<int:recipe_id>')
