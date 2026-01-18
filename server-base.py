@@ -6,6 +6,7 @@ Workshop 1001: HTMX & Datastar with Python
 
 import json
 from flask import Flask, render_template, abort, request
+import logging
 
 app = Flask(__name__)
 
@@ -83,8 +84,21 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+class Status304Filter(logging.Filter):
+    """Filter out 304 not modified responses from logs"""
+    def filter(self, record):
+        # Check if '304' appears in the log message
+        # Werkzeug formats as: "GET /static/style.css HTTP/1.1" 304 -
+        return '304' not in record.getMessage()
+
+# Apply the filter
+logger = logging.getLogger('werkzeug')
+logger.addFilter(Status304Filter())
+
 if __name__ == '__main__':
     print("🍳 Recipe Server starting on http://localhost:8000")
     print(f"📚 Loaded {len(RECIPES)} recipes")
     print("Press Ctrl+C to stop the server\n")
+
+
     app.run(debug=True, port=8000)
