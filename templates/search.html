@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}Recipe Search Results{% endblock %}
+
+{% block content %}
+
+<h1>Search Results</h1>
+<p>Found {{ total_recipes }} recipes matching "{{ query }}"</p>
+Browse  <a href="{{ url_for('home') }}">all recipes</a>.
+<hr/>
+
+{% include "recipe_list_fragment.html" %}
+
+{% endblock %}

@@ -11,6 +11,7 @@ import logging
 app = Flask(__name__)
 
 RECIPES_PER_PAGE = 10
+RECIPES = []  # Will be populated at startup
 
 class Recipe:
     """Recipe data model"""
@@ -23,11 +24,10 @@ class Recipe:
         self.author = data.get('Author', 'Unknown')
         self.ingredients = data.get('Ingredients', [])
         self.method = data.get('Method', [])
-
-    def get_image_url(self):
+        
+    def get_thumbnail_image_url(self):
         """Generate placeholder image URL"""
         return f"https://static.photos/food/200x200/{self.index}"
-
 
 def get_page_data(page):
     """Get recipe list data for a given page"""
@@ -41,7 +41,7 @@ def get_page_data(page):
     page_recipes = RECIPES[start_idx:end_idx]
 
     return {
-        'page_recipes': page_recipes,
+        'recipe_list': page_recipes,
         'page': page,
         'total_pages': total_pages,
         'total_recipes': total_recipes
@@ -120,7 +120,7 @@ logger.addFilter(Status304Filter())
 
 
 if __name__ == '__main__':
-    print("🍳 Recipe Server starting on http://localhost:8000")
+    print("🍳 Recipe Server starting...")
     
     # Load recipe data at startup
     with open('data/recipes.json', 'r') as f:

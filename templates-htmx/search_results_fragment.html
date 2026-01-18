@@ -1,0 +1,21 @@
+{% if query %}
+<p class="search-info">Found {{ recipes|length }} result{% if recipes|length != 1 %}s{% endif %} for "{{ query }}"</p>
+{% endif %}
+
+{% if recipes %}
+<ul class="recipe-list">
+    {% for recipe in recipes %}
+    <li>
+        <img src="{{ recipe.get_image_url() }}" alt="{{ recipe.name }}"/>
+        <a href="#"
+           hx-get="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
+           hx-target="#recipe-details"
+           hx-on::after-request="this.closest('body').querySelector('#recipe-details').classList.remove('empty')">
+            {{ recipe.name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% elif query %}
+<p class="no-results">No recipes found matching "{{ query }}"</p>
+{% endif %}

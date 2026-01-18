@@ -8,25 +8,17 @@ import json
 from flask import Flask, render_template, abort, request
 import logging
 
+from models import Recipe
+
 app = Flask(__name__)
+
 
 RECIPES_PER_PAGE = 10
 
-class Recipe:
-    """Recipe data model"""
-
-    def __init__(self, data, index):
-        self.index = index
-        self.name = data.get('Name', 'Unknown Recipe')
-        self.url = data.get('url', '#')
-        self.description = data.get('Description', 'No description available.')
-        self.author = data.get('Author', 'Unknown')
-        self.ingredients = data.get('Ingredients', [])
-        self.method = data.get('Method', [])
-
-    def get_image_url(self):
-        """Generate placeholder image URL"""
-        return f"https://static.photos/food/200x200/{self.index}"
+# Load recipe data at startup
+with open('data/recipes.json', 'r') as f:
+    recipe_data = json.load(f)
+    RECIPES = [Recipe(data, idx) for idx, data in enumerate(recipe_data)]
 
 
 def get_page_data(page):
@@ -41,12 +33,11 @@ def get_page_data(page):
     page_recipes = RECIPES[start_idx:end_idx]
 
     return {
-        'page_recipes': page_recipes,
+        'recipe_list': page_recipes,
         'page': page,
         'total_pages': total_pages,
         'total_recipes': total_recipes
     }
-
 
 @app.route('/')
 def home():
@@ -54,13 +45,11 @@ def home():
     page = int(request.args.get('page', 1))
     return render_template('home.html', **get_page_data(page))
 
-
 @app.route('/recipes')
 def list_recipes():
     """Recipe list endpoint for pagination"""
     page = int(request.args.get('page', 1))
     return render_template('home.html', **get_page_data(page))
-
 
 @app.route('/recipe/<int:recipe_id>')
 def recipe_detail(recipe_id):
@@ -72,6 +61,25 @@ def recipe_detail(recipe_id):
 
     return render_template('recipe.html', recipe=recipe)
 
+@app.route('/search')
+def search_recipes():
+    """Search recipes by query text"""
+    query = request.args.get('q', '').strip().lower()
+
+    if not query:
+        # Return empty state if no query
+        return render_template('search.html', recipes=[], query='')
+
+    # Filter recipes that contain the query in name or description
+    matching_recipes = []
+    for recipe in RECIPES:
+        name_match = query in recipe.name.lower()
+        desc_match = recipe.description and query in recipe.description.lower()
+        if name_match or desc_match:
+            matching_recipes.append(recipe)
+
+    return render_template('search.html', recipe_list=matching_recipes, query=query, page=1, total_pages=1, total_recipes=len(matching_recipes))
+
 
 class Status304Filter(logging.Filter):
     """Filter out 304 (not modified) to simplify log"""
@@ -79,18 +87,12 @@ class Status304Filter(logging.Filter):
         # Werkzeug format: "GET /static/style.css HTTP/1.1" 304 -
         return '304' not in record.getMessage()
 
-# Apply the filter
-logger = logging.getLogger('werkzeug')
-logger.addFilter(Status304Filter())
+
+# Apply the logging filter at module level
+logging.getLogger('werkzeug').addFilter(Status304Filter())
+
 
 if __name__ == '__main__':
-    print("🍳 Recipe Server starting on http://localhost:8000")
-    
-    # Load recipe data at startup
-    with open('data/recipes.json', 'r') as f:
-        recipe_data = json.load(f)
-        RECIPES = [Recipe(data, idx) for idx, data in enumerate(recipe_data)]
-        print(f"📚 Loaded {len(RECIPES)} recipes")
-
-    print("Press Ctrl+C to stop the server\n")
-    app.run(debug=True, port=8000)
+    print("🍳 Recipe Server starting...")
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
+    app.run(debug=True) 

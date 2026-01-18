@@ -7,13 +7,12 @@
 <p>Browse {{ total_recipes }} delicious recipes</p>
 
 <div class="search-box">
-    <form action="{{ url_for('search_recipes') }}" method="get">
-        <input type="search"
-            name="q"
-            placeholder="Search recipes..."
-            >
-        <button type="submit">Search</button>
-    </form>
+    <input type="search"
+           name="q"
+           placeholder="Search recipes..."
+           hx-get="{{ url_for('search_recipes') }}"
+           hx-trigger="input changed delay:300ms, search"
+           hx-target="#recipe-list">
 </div>
 
 <div id="recipe-list">
