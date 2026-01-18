@@ -150,3 +150,8 @@ Explain that HTMX and Datastar do roughly the same thing, but how they do it is 
     - Setting a Favorite updates their friends?
       Whenever Alvin favorites a recipe, Becky would see that update in real-time?  
     - Editing the category on a recipe that is "uncategorized", flags the recipe as "Being edited by NAME", and upon save, moves the recipe into the given category. (Main, Desert, Beverage)
+
+
+## Troubleshooting
+
+- `Access to 127.0.0.1 was denied` - `chrome://net-internals/#sockets` Flush socket pools 
