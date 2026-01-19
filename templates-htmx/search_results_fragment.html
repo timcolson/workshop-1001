@@ -6,7 +6,7 @@
 <ul class="recipe-list">
     {% for recipe in recipes %}
     <li>
-        <img src="{{ recipe.get_image_url() }}" alt="{{ recipe.name }}"/>
+        <img src="{{ recipe.get_thumbnail_image_url() }}" alt="{{ recipe.name }}" width="50" height="50" />
         <a href="#"
            hx-get="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
            hx-target="#recipe-details"

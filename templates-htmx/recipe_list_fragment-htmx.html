@@ -5,8 +5,7 @@
         <a href="#"
            hx-get="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
            hx-target="#recipe-details"
-           hx-on::after-request="this.closest('body').querySelector('#recipe-details').classList.remove('empty')">
-            {{ recipe.name }}
+           hx-on::after-request="this.closest('body').querySelector('#recipe-details').classList.remove('empty')">{{ recipe.name }}
         </a>
     </li>
     {% endfor %}

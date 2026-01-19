@@ -25,6 +25,8 @@ def list_recipes():
     page = int(request.args.get('page', 1))
     page_data = recipes.get_page(page, RECIPES_PER_PAGE)
     
+    if request.headers.get('HX-Request'):
+        return render_template('recipe_detail_fragment.html', **page_data)
     return render_template('home.html', **page_data)
 
 @app.route('/recipe/<int:recipe_id>')
@@ -33,7 +35,10 @@ def recipe_detail(recipe_id):
     recipe = recipes.get_by_id(recipe_id)
     if not recipe:
         abort(404)
+    if request.headers.get('HX-Request'):
+        return render_template('recipe_detail_fragment.html', recipe=recipe)
     return render_template('recipe.html', recipe=recipe)
+
 
 
 @app.route('/search')
@@ -41,6 +46,9 @@ def search_recipes():
     """Search recipes by query text"""
     query = request.args.get('q', '')
     results = recipes.search(query)
+
+    if request.headers.get('HX-Request'):
+        return render_template('search_results_fragment.html', recipes=results, query=query)
     return render_template('search.html',
         recipe_list=results, query=query,
         page=1, total_pages=1, total_recipes=len(results))
