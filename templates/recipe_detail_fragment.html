@@ -1,4 +1,6 @@
+
 <h1>{{ recipe.name }}</h1>
+<img src="{{ recipe.get_thumbnail_image_url() }}" alt="{{ recipe.name }}" width="200" height="200">
 
 <div class="recipe-meta">
     <p><strong>Author:</strong> {{ recipe.author }}</p>
