@@ -4,10 +4,13 @@
 
 {% block content %}
 <h1>Recipe Browser</h1>
-<p>Browse {{ total_recipes }} delicious recipes</p>
+<p><a href="#"
+       hx-get="{{ url_for('list_recipes', page=page) }}"
+       hx-target="#recipe-list"
+       hx-on::after-request="document.getElementById('search-input').value = ''">Browse {{ total_recipes }} recipes</a></p>
 
-<div class="search-box">
-    <input type="search"
+<div id="search" class="search-box">
+    <input id="search-input" type="search"
            name="q"
            placeholder="Search recipes..."
            hx-get="{{ url_for('search_recipes') }}"
