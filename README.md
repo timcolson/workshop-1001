@@ -131,13 +131,14 @@ Displaying recipe details inline on the page, without a separate page load, woul
 
 How? Imagine you could send the selected recipe ID to the server, get back recipe details, and show the recipe in a second column. 
 
-You're in luck! The CSS already defines two flex-columns, called `recipe-list-panel` & `recipe-details-panel`.  
+You're in luck! The CSS already defines styles for flex-columns, called `recipe-navigation-panel` & `recipe-details-panel`.  
 
-Take the following steps to connect to the server for the details:
+Take the following steps to dynamically show the details:
 
-1. Add the HTMX library to the layout
-2. Send the recipe ID to the server for details
-3. Display recipe details in #recipe-details div
+1. Add the HTMX library in the layout
+2. Update the layout with a container for two divs
+3. Create a link that requests recipe details for a recipe ID
+4. Display recipe details in the `#recipe-details` div
 
 #### Step 1 - Add HTMX to the project
 
@@ -156,7 +157,7 @@ In the layout template, replace the contents of `<body>` with the following HTML
 
 ```html
 <div class="container">
-    <div class="recipe-list-panel">
+    <div id="recipe-navigation" class="recipe-list-panel">
         {% block content %}{% endblock %}
     </div>
     <div id="recipe-details" class="recipe-details-panel empty">

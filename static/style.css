@@ -3,11 +3,9 @@
 
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
     padding: 20px;
     max-width: 800px;
-    margin: 0 auto;
-}
+    }
 
 h1 {
     color: #333;
@@ -184,8 +182,8 @@ body:has(.container) {
     max-width: none;
 }
 
-/* Left panel - recipe list */
-.recipe-list-panel {
+/* Left panel - navigation */
+.navigation-panel {
     flex: 1;
     min-width: 400px;
     overflow-y: auto;
@@ -193,7 +191,7 @@ body:has(.container) {
 }
 
 /* Right panel - recipe details */
-.recipe-details-panel {
+.details-panel {
     flex: 1;
     min-width: 900px;
     overflow-y: auto;
@@ -202,7 +200,7 @@ body:has(.container) {
     background: #f9f9f9;
 }
 
-.recipe-details-panel.empty {
+.details-panel.empty {
     display: flex;
     align-items: center;
     justify-content: center;
