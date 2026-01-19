@@ -19,8 +19,8 @@ Recipe Source - 13,582 recipes scraped from Epicurious; plus 200MB of small imag
 
 Recipe Source - public domain repository; data in markdown files with frontmatter & Hugo
 
- - [github.com/ronaldl29 - public-domain-recipes](https://github.com/ronaldl29/public-domain-recipes)
- - Plan to switch to this data source. Time constraint for a local Python meetup, and format difference are limiting factors. Submit a patch if you have time!
+- [github.com/ronaldl29 - public-domain-recipes](https://github.com/ronaldl29/public-domain-recipes)
+- Plan to switch to this data source. Time constraint for a local Python meetup, and format difference are limiting factors. Submit a patch if you have time!
 
 ----
 
@@ -34,7 +34,7 @@ The app consists of the following features:
 - Static data in files (JSON) for simplicity.
 - Template files to separate HTML views from code.
   
-**To set up your environment and run the webapp**
+### To set up your environment and run the webapp
 
 Pre-requisites: Python 3.10+ (tested with 3.14)
 
@@ -57,7 +57,7 @@ The app works, but it's not a great experience (UX) is it? Why not???
 - *Paging*
 - *???*
 
-**Consider upgrading to a dynamic app… reasons why? (3 min)**  
+### Consider upgrading to a dynamic app… reasons why? (3 min)
 
 - *List three ways you might upgrade the app to be more fluid...*
   
@@ -65,13 +65,13 @@ The app works, but it's not a great experience (UX) is it? Why not???
 - *Infinite scroll* without “pages”  
 - *Dynamic Search* with server-side index and dynamic results as you type.  
   
-**3 minutes of “theory”**  
+### 3 minutes of “theory”
 
 In the beginning (circa 1990), the World Wide Web consisted entirely of the following model:
 
 - Web 1.0 : User -> Request (HTTP) -> Server -> Response (HTML)
 
-Fast forward 15 years to 2005, and AJAX ushered in asynchronous dynamic web sites. Single Page Applications (SPA) took hold. Google Mail was one of the first examples. In the SPA model, JavaScript (JS) makes requests on behalf of the user: 
+Fast forward 15 years to 2005, and AJAX ushered in asynchronous dynamic web sites. Single Page Applications (SPA) took hold. Google Mail was one of the first examples. In the SPA model, JavaScript (JS) makes requests on behalf of the user:
 
 - SPA : User -> Request (HTTP) -> Server -> SPA (HTML + JS) -> Request from App -> Response (**JSON**) -> repeat *ad infinitum*
 
@@ -79,7 +79,7 @@ Skip ahead another 15 years to 2020. JavaScript is ubiquitous . Web front ends a
 
 Users want dynamic webapps. Developers struggle with the complexity of front ends. Sometimes, you just need dyanmic HTML.
 
-With HTMX and Datastar, the model moves back slightly closer to the original Web 1.0: 
+With HTMX and Datastar, the model moves back slightly closer to the original Web 1.0:
 
 - HTMX: User -> Request (HTTP) -> Server -> (HTML + HTMX) -> Request from App -> Partial Response (**HTML**) -> repeat *ad infinitum*
 - Datastar: User -> Request (HTTP) -> Server -> (HTML + Datastar) -> Server Sent Event (SSE) -> Signal to patch DOM **) -> repeat *ad infinitum*
@@ -129,7 +129,7 @@ When a user selects a recipe, they expect to see it without delay. Viewing anoth
 
 Displaying recipe details inline on the page, without a separate page load, would be a big improvement
 
-How? Imagine you could send the selected recipe ID to the server, get back recipe details, and show the recipe in a second column. 
+How? Imagine you could send the selected recipe ID to the server, get back recipe details, and show the recipe in a second column.
 
 You're in luck! The CSS already defines styles for flex-columns, called `recipe-navigation-panel` & `recipe-details-panel`.  
 
@@ -185,7 +185,7 @@ Refresh your browser and select a recipe!
 
 **How is this working!?!** The new recipe link invokes HTMX to handle the request. HTMX calls the server and puts the results into the `target` div.
 
-The server is still sending an **entire page** wrapped in `layout.html`. So, you're getting extra HTML that you don't need. 
+The server is still sending an **entire page** wrapped in `layout.html`. So, you're getting extra HTML that you don't need.
 
 What you need is just the recipe details fragment.
 
@@ -220,7 +220,7 @@ Refresh the page, then select a recipe. The recipe details should be looking pre
 
 HTMX provides many more attributes which you can review in the [HTMX Reference - Core Attributes](https://htmx.org/reference/#attributes).
 
-Note: HTMX also applies a CSS class (`htmx-indicator`) while a request is ongoing. That might be useful for updates that take a few seconds. You could display a "Loading..." message during the request. 
+Note: HTMX also applies a CSS class (`htmx-indicator`) while a request is ongoing. That might be useful for updates that take a few seconds. You could display a "Loading..." message during the request.
 
 ### Upgrade - Live search results (15 min)  
 
@@ -255,6 +255,7 @@ return render_template('search_results_fragment.html', recipes=results, query=qu
 ```
 3. Create a new template file : `search_results_fragment.html`
 4. Add the following template content:
+
 ```html
 {% if query %}
 <p class="search-info">Found {{ recipes|length }} result{% if recipes|length != 1 %}s{% endif %} for "{{ query }}"</p>
@@ -281,21 +282,17 @@ return render_template('search_results_fragment.html', recipes=results, query=qu
 
 ***Congratulations!!!*** You should now have dynamic search results!
 
-
 ### Upgrade: Infinite scroll for recipe list (15 min)
 
 Instead of 10 at a time as “pages”, wouldn't it be better to load more recipes into the list when the user scrolls to the bottom?
 
-**Optional Side Quest:** Before you get started with infinite scroll, you might want to try upgrading the **Next** and **Previous** links to use HTMX. Right now, choosing those buttons re-loads the full page, which clears the currently selected recipe detail. If you convert to HTMX, the page of results could target the recipe_list column. We won't go through the detailed steps, because they are similar to what you've already done. Doing is learning, right? :) 
-
+**Optional Side Quest:** Before you get started with infinite scroll, you might want to try upgrading the **Next** and **Previous** links to use HTMX. Right now, choosing those buttons re-loads the full page, which clears the currently selected recipe detail. If you convert to HTMX, the page of results could target the recipe_list column. We won't go through the detailed steps, because they are similar to what you've already done. Doing is learning, right? :)
 
 ***TODO*** -- Add a trigger that loads and appends the next page of recipes into the recipe list. Hint: You'll use the [hx-on*](https://htmx.org/attributes/hx-on/) attributes.
 
-
-
 ## Part III: Upgrade to Dynamic App - Datastar
 
-NOTE: If the workshop authors have the time, we'll build this section. If not, well, we only promised an introduction. 
+NOTE: If the workshop authors have the time, we'll build this section. If not, well, we only promised an introduction.
 
 The authors of Datastar agree that hypermedia is a great way to build dynamic apps. They take a different approach to how to make dynamic updates.
 
@@ -311,7 +308,6 @@ The following table compares features of the two frameworks:
 | Client-side Reactivity | No built-in state management; often paired with Alpine.js for reactivity | Built-in reactive signals (similar to Alpine.js) |
 
 TODO: Return to the base app, re-apply the upgrades using Datastar.
-
 
 ## Summary
 
@@ -330,7 +326,6 @@ TODO: Return to the base app, re-apply the upgrades using Datastar.
       Whenever Alvin favorites a recipe, Becky would see that update in real-time?  
     - Editing the category on a recipe that is "uncategorized", flags the recipe as "Being edited by NAME", and upon save, moves the recipe into the given category. (Main, Desert, Beverage)
 
-
 ## Troubleshooting
 
-- `Access to 127.0.0.1 was denied` - `chrome://net-internals/#sockets` Flush socket pools 
+- `Access to 127.0.0.1 was denied` - `chrome://net-internals/#sockets` Flush socket pools
