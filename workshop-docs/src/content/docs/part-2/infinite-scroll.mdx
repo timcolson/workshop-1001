@@ -1,0 +1,65 @@
+---
+title: Infinite Scroll
+description: Load more recipes automatically as user scrolls
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Instead of 10 recipes at a time as "pages", wouldn't it be better to load more recipes when the user scrolls to the bottom?
+
+## Optional Side Quest First
+
+:::caution[Side Quest]
+Before you get started with infinite scroll, you might want to try upgrading the **Next** and **Previous** links to use HTMX.
+
+Right now, choosing those buttons re-loads the full page, which clears the currently selected recipe detail. If you convert to HTMX, the page of results could target the `#recipe-list` column.
+
+We won't go through the detailed steps because they are similar to what you've already done. Doing is learning, right? 😊
+:::
+
+## Implementing Infinite Scroll
+
+The concept:
+
+1. Add a trigger element at the bottom of the recipe list
+2. When that element comes into view, fetch the next page
+3. Append the new recipes to the existing list
+
+### Key HTMX Attributes for Infinite Scroll
+
+| Attribute | Purpose |
+|-----------|---------|
+| `hx-get` | URL to fetch next page of recipes |
+| `hx-trigger` | `revealed` — fires when element scrolls into viewport |
+| `hx-swap` | `afterend` — append content after the trigger element |
+
+### Example Implementation
+
+```html title="templates/recipe_list_fragment.html" ins={5-9}
+<ul class="recipe-list">
+    {% for recipe in recipes %}
+    <!-- recipe items -->
+    {% endfor %}
+    <li hx-get="{{ url_for('recipe_list', page=next_page) }}"
+        hx-trigger="revealed"
+        hx-swap="outerHTML"
+        hx-indicator=".loading-spinner">
+        Loading more recipes...
+    </li>
+</ul>
+```
+
+:::note[Implementation TODO]
+This section is a work in progress. The full implementation will use the `hx-on*` attributes.
+
+Hint: Check out [hx-on*](https://htmx.org/attributes/hx-on/) in the HTMX docs.
+:::
+
+## How It Works
+
+1. **Initial load**: Shows first 10 recipes plus a "trigger" element at the bottom
+2. **User scrolls**: When trigger element becomes visible (`revealed`), HTMX fetches next page
+3. **Append**: New recipes are inserted, replacing the trigger with actual content + new trigger
+4. **Repeat**: Process continues until no more pages
+
+Ready to explore an alternative approach? Check out [Part III: Datastar](/part-3/).

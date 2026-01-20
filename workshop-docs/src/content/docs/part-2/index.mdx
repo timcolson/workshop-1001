@@ -1,0 +1,52 @@
+---
+title: Part II Overview
+description: Upgrade to a dynamic app with HTMX
+---
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+You will upgrade the app to dynamically show recipe details, return live search results, and infinitely scroll the recipe list.
+
+## Understanding the App Structure
+
+Before you make changes, you need to see how the app is currently structured.
+
+The recipe app is built with [Flask](https://flask.palletsprojects.com/en/stable/) which is a well-known web framework for Python:
+
+- **`app.py`** — Main entry point with routes for home, recipe list, details, and search
+- **`models.py`** — Provides a *Recipe* data model and repository for fetching recipes
+- **`templates/`** — HTML templates that separate views from code
+
+:::note[Log Filtering]
+You might notice `Status304Filter` in `app.py` — it simplifies log output by not recording *not modified* entries for static assets like CSS.
+:::
+
+## Routes and Templates
+
+Each route retrieves data and renders a template:
+
+- **Standalone page templates** (`home.html`, `recipe.html`, `search.html`) can include reusable *fragments*
+- **Full pages** extend a common `layout.html` template which includes CSS and JavaScript
+- **Depending on your needs**, a route can return a full HTML page or a smaller chunk of HTML
+
+That flexibility will be important for making dynamic upgrades!
+
+## HTMX Upgrades
+
+<CardGrid>
+  <LinkCard
+    title="Inline Recipe Details"
+    description="Display details in a side panel without page reload"
+    href="/part-2/inline-details"
+  />
+  <LinkCard
+    title="Live Search Results"
+    description="Dynamic search with debouncing"
+    href="/part-2/live-search"
+  />
+  <LinkCard
+    title="Infinite Scroll"
+    description="Load more recipes as user scrolls"
+    href="/part-2/infinite-scroll"
+  />
+</CardGrid>

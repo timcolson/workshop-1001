@@ -1,0 +1,82 @@
+---
+title: Why Upgrade?
+description: The evolution from Web 1.0 to hypermedia-driven apps
+---
+
+## Consider upgrading to a dynamic app
+
+What are some ways you might upgrade the app to be more fluid?
+
+- **Better UX** — show the recipe details inline, without a separate page load
+- **Infinite scroll** — without "pages"
+- **Dynamic Search** — server-side index with results as you type
+
+## A Brief History of Web Architecture
+
+### Web 1.0 (circa 1990)
+
+The original World Wide Web model:
+
+```
+User → Request (HTTP) → Server → Response (HTML)
+```
+
+### Single Page Applications (2005+)
+
+AJAX ushered in asynchronous dynamic websites. Google Mail was one of the first examples:
+
+```
+User → Request → Server → SPA (HTML + JS) → Request from App → Response (JSON) → repeat
+```
+
+### Hypermedia Frameworks (2020+)
+
+JavaScript is ubiquitous. Web front ends are amazing but also complex. Users want dynamic webapps. Developers struggle with the complexity. Sometimes, you just need dynamic HTML.
+
+**HTMX approach:**
+```
+User → Request → Server → (HTML + HTMX) → Request from App → Partial Response (HTML) → repeat
+```
+
+**Datastar approach:**
+```
+User → Request → Server → (HTML + Datastar) → Server Sent Event (SSE) → Signal to patch DOM → repeat
+```
+
+## Hypermedia First
+
+Both HTMX and Datastar feature a *hypermedia first* approach:
+
+- **HTMX**: Use additional HTML attributes to create requests from your app to the server
+- **Datastar**: Modify your app state with events sent from the server
+
+### HTMX Example
+
+Click invokes a GET action, server sends back HTML:
+
+```html title="recipe link with HTMX"
+<a href="#"
+    hx-get="{{ url_for('endpoint', recipe_id=recipe.index) }}"
+    hx-target="#recipe-details">Recipe 1</a>
+```
+
+### Datastar Example
+
+Click invokes a GET action, server sends an event back with data:
+
+```html title="button with Datastar"
+<button data-on:click="@get('/endpoint')">
+    Open the pod bay doors, HAL.
+</button>
+<div id="hal"></div>
+```
+
+## Key Differences
+
+HTMX adds new `hx-` prefixed attributes to existing HTML tags. Datastar extends HTML through `data-` prefixed attributes using the HTML `data-*` standard (hence the name "data star").
+
+Both rely on JavaScript to do their thing, but JavaScript is somewhat hidden from you, the developer.
+
+We'll explore the similarities and differences later, but let's dive into some upgrades with HTMX!
+
+Ready? Head to [Part II: HTMX Upgrades](/part-2/).

@@ -1,0 +1,98 @@
+---
+title: Side Quests
+description: Optional challenges to extend your learning
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+These are optional challenges for those who want to explore further!
+
+## Challenge Ideas
+
+<CardGrid>
+  <Card title="Favorite Recipes" icon="star">
+    Add a "star" to favorite a recipe and show favorites in a list.
+
+    **Complexity**: Need to save user preferences (no DB currently)
+  </Card>
+  <Card title="Real-time Updates" icon="rocket">
+    Use SSE to push updates to the client
+
+    **Ideas**:
+    - Multiple users on the same server
+    - When Alvin favorites a recipe, Becky sees it in real-time
+  </Card>
+  <Card title="Collaborative Editing" icon="pencil">
+    Edit recipe categories collaboratively
+
+    **Ideas**:
+    - Flag recipe as "Being edited by NAME"
+    - Upon save, move recipe to category (Main, Dessert, Beverage)
+  </Card>
+  <Card title="HTMX Pagination" icon="list-format">
+    Convert Next/Previous buttons to HTMX
+
+    **Goal**: Don't lose selected recipe when paging
+  </Card>
+</CardGrid>
+
+## Favorite Recipes Deep Dive
+
+### Requirements
+
+1. Add a star icon next to each recipe
+2. Clicking the star favorites/unfavorites the recipe
+3. Show a favorites count or list somewhere
+
+### Implementation Hints
+
+```html title="Favorite button concept" ins={2-5}
+<li>
+    <button hx-post="{{ url_for('toggle_favorite', recipe_id=recipe.index) }}"
+            hx-swap="outerHTML"
+            class="favorite-btn {% if recipe.is_favorited %}active{% endif %}">
+        ⭐
+    </button>
+    <a href="#" hx-get="...">{{ recipe.name }}</a>
+</li>
+```
+
+### Challenges to Solve
+
+- **Storage**: Where to store favorites? (Session, localStorage, database?)
+- **State**: How to track which recipes are favorited?
+- **UI**: How to display favorites list?
+
+## Real-time with SSE
+
+This is where Datastar really shines, but you can do it with HTMX too.
+
+### HTMX SSE Extension
+
+```html title="SSE with HTMX"
+<div hx-ext="sse"
+     sse-connect="/events"
+     sse-swap="message">
+    Waiting for updates...
+</div>
+```
+
+### Server-side (Flask)
+
+```python title="app.py - SSE endpoint"
+from flask import Response
+import time
+
+@app.route('/events')
+def events():
+    def generate():
+        while True:
+            # Check for new data
+            yield f"data: <div>Update at {time.time()}</div>\n\n"
+            time.sleep(5)
+    return Response(generate(), mimetype='text/event-stream')
+```
+
+## What Would You Like to Explore Further?
+
+The best way to learn is by building. Pick a challenge that interests you and give it a try!

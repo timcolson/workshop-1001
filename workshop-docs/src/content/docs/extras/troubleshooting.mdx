@@ -1,0 +1,96 @@
+---
+title: Troubleshooting
+description: Common issues and how to fix them
+---
+
+## Common Issues
+
+### Access to 127.0.0.1 was denied
+
+**Symptom**: Chrome refuses to connect to your Flask app
+
+**Solution**: Flush Chrome's socket pools
+
+1. Open Chrome and navigate to: `chrome://net-internals/#sockets`
+2. Click "Flush socket pools"
+3. Try accessing your app again
+
+### Flask not finding templates
+
+**Symptom**: `TemplateNotFound` error
+
+**Solution**: Make sure you're running Flask from the project root directory:
+
+```bash
+cd /path/to/workshop-1001
+flask run --app app.py
+```
+
+### HTMX requests not working
+
+**Symptom**: Clicking links does nothing or full page loads
+
+**Checklist**:
+
+1. **Is HTMX loaded?** Check browser DevTools → Network tab for the HTMX script
+2. **Check for JavaScript errors** in browser console
+3. **Verify the `hx-*` attributes** are spelled correctly
+4. **Check target element exists** — the `hx-target` selector must match an element ID
+
+### HX-Request header not detected
+
+**Symptom**: Server returns full page instead of fragment
+
+**Debug**: Add logging to your route:
+
+```python title="app.py"
+@app.route('/recipe/<int:recipe_id>')
+def recipe_detail(recipe_id):
+    print(f"HX-Request: {request.headers.get('HX-Request')}")
+    # ...
+```
+
+### CSS not applying to HTMX-loaded content
+
+**Symptom**: Dynamically loaded content looks unstyled
+
+**Causes**:
+- CSS might be scoped to elements that don't exist in fragments
+- Class names might be different in fragment vs. full page
+
+**Solution**: Ensure fragments use the same CSS classes as the full page
+
+### Changes not appearing after code edit
+
+**Symptom**: You edited a file but nothing changed
+
+**Solutions**:
+
+1. **Restart Flask** — templates are often cached
+   ```bash
+   # Stop with Ctrl+C, then restart
+   flask run --app app.py
+   ```
+
+2. **Hard refresh browser** — `Cmd+Shift+R` (Mac) or `Ctrl+Shift+R` (Windows)
+
+3. **Check you edited the right file** — easy to edit the wrong template!
+
+## Getting Help
+
+If you're stuck:
+
+1. Check the [HTMX Discord](https://htmx.org/discord)
+2. Search [HTMX GitHub Issues](https://github.com/bigskysoftware/htmx/issues)
+3. Ask in the workshop chat/forum
+
+## Summary
+
+You made it! Here's what you accomplished:
+
+- ✅ Added dynamic elements without React complexity
+- ✅ Learned HTMX attributes: `hx-get`, `hx-target`, `hx-trigger`, `hx-swap`
+- ✅ Understood the hypermedia approach to web development
+- ✅ Compared HTMX and Datastar philosophies
+
+**What would you like to explore further?**

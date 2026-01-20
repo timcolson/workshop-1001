@@ -1,0 +1,135 @@
+---
+title: Inline Recipe Details
+description: Display recipe details without page reloads
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+When a user selects a recipe, they expect to see it without delay. Viewing another recipe should not require the back button.
+
+Displaying recipe details inline on the page, without a separate page load, would be a big improvement.
+
+**How?** Imagine you could send the selected recipe ID to the server, get back recipe details, and show the recipe in a second column.
+
+:::tip[Good news!]
+The CSS already defines styles for flex-columns, called `recipe-navigation-panel` & `recipe-details-panel`.
+:::
+
+## Implementation Steps
+
+<Steps>
+
+1. Add the HTMX library in the layout
+2. Update the layout with a container for two divs
+3. Create a link that requests recipe details for a recipe ID
+4. Display recipe details in the `#recipe-details` div
+
+</Steps>
+
+## Step 1: Add HTMX to the Project
+
+Load HTMX in the layout template which is used for all full pages.
+
+Open `templates/layout.html` and add the script in the `<head>` section:
+
+```html title="templates/layout.html" ins={2-3}
+<head>
+    <!-- Add HTMX library -->
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
+</head>
+```
+
+## Step 2: Update Layout for Split Panel
+
+Replace the contents of `<body>` in `layout.html` with the following HTML:
+
+```html title="templates/layout.html" ins={1-8}
+<div class="container">
+    <div id="recipe-navigation" class="recipe-list-panel">
+        {% block content %}{% endblock %}
+    </div>
+    <div id="recipe-details" class="recipe-details-panel empty">
+        <p>Select a recipe to view details</p>
+    </div>
+</div>
+```
+
+This creates a two-column layout:
+- **Left column** (`recipe-navigation`): Recipe list
+- **Right column** (`recipe-details`): Details panel with placeholder
+
+## Step 3: Add HTMX to Recipe Links
+
+Open `templates/recipe_list_fragment.html` and find the recipe detail link:
+
+```html title="Before - standard link"
+<a href="{{ url_for('recipe_detail', recipe_id=recipe.index) }}">
+    {{ recipe.name }}
+</a>
+```
+
+Replace the `href` value with `#` and add HTMX attributes:
+
+```html title="After - HTMX enhanced" ins={2-4} del={1}
+<a href="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
+<a href="#"
+   hx-get="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
+   hx-target="#recipe-details">
+    {{ recipe.name }}
+</a>
+```
+
+**Refresh your browser and select a recipe!**
+
+:::note[Wow!]
+You should already see **dynamic loading** of recipe details! The result isn't perfect, but we'll fix that in the next step.
+:::
+
+**How is this working?** The new recipe link invokes HTMX to handle the request. HTMX calls the server and puts the results into the `target` div.
+
+The server is still sending an **entire page** wrapped in `layout.html`. So you're getting extra HTML that you don't need.
+
+## Step 4: Return Only the Fragment
+
+Update the server to return partial HTML for HTMX requests.
+
+Open `app.py` and add this **before** the return statement in `recipe_detail()`:
+
+```python title="app.py" ins={2-3}
+def recipe_detail(recipe_id):
+    if request.headers.get('HX-Request'):
+        return render_template('recipe_detail_fragment.html', recipe=recipe)
+    return render_template('recipe.html', recipe=recipe)
+```
+
+**Stop and restart the server.**
+
+For requests from HTMX, the **HX-Request** header is present. With that info, your server action can choose a different template — in this case, only the HTML produced by `recipe_detail_fragment`.
+
+## Step 5: Fix the Formatting
+
+The CSS applies a centered style when the details panel is `empty`. Let's remove that class after loading content.
+
+Use HTMX's `hx-on::after-request` attribute to run inline JavaScript.
+
+Open `templates/recipe_list_fragment.html` and add another attribute to the detail link:
+
+```html title="templates/recipe_list_fragment.html" ins={4-5}
+<a href="#"
+   hx-get="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
+   hx-target="#recipe-details"
+   hx-on::after-request="this.closest('body')
+       .querySelector('#recipe-details').classList.remove('empty')">
+    {{ recipe.name }}
+</a>
+```
+
+**Refresh the page, then select a recipe.** The recipe details should look great now!
+
+:::tip[Learn More]
+HTMX provides many more attributes. Check the [HTMX Reference - Core Attributes](https://htmx.org/reference/#attributes).
+
+HTMX also applies a CSS class (`htmx-indicator`) while a request is ongoing — useful for displaying a "Loading..." message.
+:::
+
+Next up: [Live Search Results](/part-2/live-search)

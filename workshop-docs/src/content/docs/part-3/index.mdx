@@ -1,0 +1,78 @@
+---
+title: Datastar Comparison
+description: Comparing HTMX with the Datastar hypermedia framework
+---
+
+:::note[Work in Progress]
+If the workshop authors have the time, we'll build this section. If not, well, we only promised an introduction.
+:::
+
+The authors of Datastar agree that hypermedia is a great way to build dynamic apps. They take a different approach to how to make dynamic updates.
+
+## Feature Comparison
+
+| Feature | HTMX | Datastar |
+|---------|------|----------|
+| **Philosophy** | Adds to existing HTML specification; minimal and unopinionated | Combines features of HTMX and Alpine.js, aiming for high-performance live updates; minimal and more opinionated |
+| **Response Type** | Primarily expects HTML fragments in response | Can send HTML fragments, JSON, or JavaScript |
+| **Update Logic** | Client-driven: logic scattered across HTML attributes that trigger requests | Server-driven: server decides what should change, keeping logic in one place |
+| **Primary Protocol** | AJAX (HTTP requests) | Server-Sent Events (SSE) (server "pushes" updates) |
+| **Real-time Updates** | Requires polling or writing custom WebSocket code | Built-in real-time updates via SSE |
+| **Client-side Reactivity** | No built-in state management; often paired with Alpine.js for reactivity | Built-in reactive signals (similar to Alpine.js) |
+
+## Key Differences
+
+### HTMX Approach
+- Uses `hx-*` attributes on HTML elements
+- Client initiates all requests
+- Server responds with HTML fragments
+- Simple mental model: "click triggers request, response replaces element"
+
+### Datastar Approach
+- Uses `data-*` attributes (standard HTML data attributes)
+- Server can push updates to client via SSE
+- Reactive signals for client-side state
+- More features built-in, but more to learn
+
+## Code Comparison
+
+### HTMX Example
+
+```html title="HTMX button"
+<button hx-get="/api/data"
+        hx-target="#result"
+        hx-trigger="click">
+    Load Data
+</button>
+<div id="result"></div>
+```
+
+### Datastar Example
+
+```html title="Datastar button"
+<button data-on:click="@get('/api/data')">
+    Load Data
+</button>
+<div id="result"></div>
+```
+
+## When to Choose Which?
+
+**Choose HTMX if:**
+- You want minimal learning curve
+- Your use case is mostly click-to-load interactions
+- You prefer explicit, attribute-based behavior
+
+**Choose Datastar if:**
+- You need real-time server-pushed updates
+- You want built-in reactive state management
+- You're building highly interactive applications
+
+:::caution[TODO]
+Return to the base app and re-apply the upgrades using Datastar.
+:::
+
+## Resources
+
+- [HTMX Documentation](https://htmx.org/)
+- [Datastar Documentation](https://data-star.dev/)

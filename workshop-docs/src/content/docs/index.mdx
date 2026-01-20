@@ -1,0 +1,51 @@
+---
+title: Intro to HTMX & Datastar with Python
+description: Build dynamic web apps without the JavaScript complexity
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+Want to make a dynamic web app, without a bunch of JavaScript or React?
+
+With [HTMX](https://htmx.org/) or [Datastar](https://data-star.dev/), your server-side Python can send HTML to dynamically update the view for your users. By the end of this hour-long workshop, you will understand the model for building reactive, dynamic websites using two popular hypermedia frameworks.
+
+:::caution[Disclaimer]
+Some concepts might not be explained correctly. We are all learning. If you have corrections, submit them as bugs. Remember: Be kind.
+:::
+
+## What You'll Build
+
+<CardGrid>
+  <Card title="Inline Recipe Details" icon="document">
+    Display recipe details without page reloads
+  </Card>
+  <Card title="Live Search" icon="magnifier">
+    Dynamic search results as you type
+  </Card>
+  <Card title="Infinite Scroll" icon="down-caret">
+    Load more recipes automatically on scroll
+  </Card>
+  <Card title="Datastar Comparison" icon="random">
+    Explore an alternative hypermedia approach
+  </Card>
+</CardGrid>
+
+## Workshop Structure
+
+| Part | Topic | Duration |
+|------|-------|----------|
+| **I** | Baseline HTML Recipes Web App | ~10 min |
+| **II** | Upgrade to Dynamic App with HTMX | ~40 min |
+| **III** | Datastar Alternative | Optional |
+
+## Recipe Data Source
+
+The workshop uses ~1,600 recipes scraped from BBC as a JSON file.
+
+:::note[Attribution]
+- [Scraped data at frosch.cosy.sbg.ac.at](https://frosch.cosy.sbg.ac.at/datasets/json/recipes/-/blob/main/recipes.json?ref_type=heads)
+- Alternative: [Kaggle dataset - food-ingredients](https://www.kaggle.com/datasets/pes12017000148/food-ingredients-and-recipe-dataset-with-images)
+- Public domain option: [github.com/ronaldl29 - public-domain-recipes](https://github.com/ronaldl29/public-domain-recipes)
+:::
+
+Ready to get started? Head to [Part I: Setup](/part-1/setup) to set up your environment.

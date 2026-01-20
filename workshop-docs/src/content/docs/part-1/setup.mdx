@@ -1,0 +1,78 @@
+---
+title: Setup & Run
+description: Get the baseline recipe app running locally
+---
+
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Before you can add upgrades, you need a working example webapp! The workshop provides code for a crude recipe webapp.
+
+## App Features
+
+The baseline app consists of:
+
+- Flask webapp to browse, view, and search recipes
+- Static data in files (JSON) for simplicity
+- Template files to separate HTML views from code
+
+## Prerequisites
+
+- Python 3.10+ (tested with 3.14)
+- Git
+
+## Setup Steps
+
+<Steps>
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/timcolson/workshop-1001
+   cd workshop-1001
+   ```
+
+2. **Create virtual environment**
+
+   <Tabs>
+     <TabItem label="macOS/Linux">
+       ```bash
+       python -m venv venv
+       source venv/bin/activate
+       ```
+     </TabItem>
+     <TabItem label="Windows">
+       ```bash
+       python -m venv venv
+       venv\Scripts\activate
+       ```
+     </TabItem>
+   </Tabs>
+
+3. **Install dependencies**
+   ```bash
+   pip install flask
+   ```
+
+4. **Run the webapp**
+   ```bash
+   flask run --app app.py
+   ```
+
+5. **Open in browser**
+
+   Navigate to [http://127.0.0.1:5000](http://127.0.0.1:5000)
+
+</Steps>
+
+:::tip[Success!]
+You should have a working recipe webapp. Browse the list of recipes, view some recipe details, navigate back to the list, go to the next page, and run a search.
+:::
+
+## Try It Out
+
+The app works, but the user experience (UX) isn't great, is it? Why not?
+
+- Separate page loads for every action
+- Manual paging through results
+- Search requires form submission
+
+Next, let's discuss [why we should upgrade](/part-1/why-upgrade) to a dynamic app.
