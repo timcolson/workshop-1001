@@ -21,7 +21,7 @@ npm run dev
 python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install flask
-flask run --app app.py
+flask --app app.py run
 # Open http://127.0.0.1:5000
 ```
 
