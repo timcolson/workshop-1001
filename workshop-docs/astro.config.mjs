@@ -4,6 +4,8 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://timcolson.github.io',
+	base: '/workshop-1001',
 	integrations: [
 		starlight({
 			title: 'HTMX & Datastar Workshop',
