@@ -1,12 +1,7 @@
 
 
 <ul class="recipe-list">
-    {% for recipe in recipe_list %}
-    <li>
-        <img src="{{ recipe.get_thumbnail_image_url() }}" alt="{{ recipe.name }}" width="100" height="100">
-        <a href="{{ url_for('recipe_detail', recipe_id=recipe.index) }}">{{ recipe.index }} - {{ recipe.name }}</a>
-    </li>
-    {% endfor %}
+{% include "recipe_list_items.html" %}
 </ul>
 
 <div class="pagination">
@@ -18,5 +13,5 @@
 
     {% if page < total_pages %}
     <a href="{{ url_for('list_recipes', page=page+1) }}">Next</a>
-    {% endif %}
+        {% endif %}
 </div>

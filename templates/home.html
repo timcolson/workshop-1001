@@ -8,16 +8,13 @@
 
 <div class="search-box">
     <form action="{{ url_for('search_recipes') }}" method="get">
-        <input type="search"
-            name="q"
-            placeholder="Search recipes..."
-            >
+        <input type="search" name="q" placeholder="Search recipes...">
         <button type="submit">Search</button>
     </form>
 </div>
 
 <div id="recipe-list">
-{% include "recipe_list_fragment.html" %}
+    {% include "recipe_list.html" %}
 </div>
 
 {% endblock %}

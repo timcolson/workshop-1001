@@ -27,13 +27,30 @@ def list_recipes():
     
     return render_template('home.html', **page_data)
 
+
+@app.route('/recipes_li')
+def recipes_li():
+    """Recipe list endpoint for infinite scross"""
+    page = int(request.args.get('page', 1))
+    page_data = recipes.get_page(page, RECIPES_PER_PAGE)
+    print("zack, yo!")
+    print(f"{page_data=}")
+    print("-="*25)
+    #return "Zack Wuz Here"
+    rendered_template = render_template('recipe_list_items.html', **page_data)
+    print(f"{rendered_template=}")
+    return rendered_template
+
 @app.route('/recipe/<int:recipe_id>')
 def recipe_detail(recipe_id):
     """Recipe detail page"""
     recipe = recipes.get_by_id(recipe_id)
     if not recipe:
         abort(404)
-    return render_template('recipe.html', recipe=recipe)
+    if request.headers.get('HX-Request'):
+        return render_template('recipe_detail_fragment.html', recipe=recipe)
+    else:
+        return render_template('recipe.html', recipe=recipe)
 
 
 

@@ -1,0 +1,6 @@
+{% for recipe in recipe_list %}
+<li>
+    <img src="{{ recipe.get_thumbnail_image_url() }}" alt="{{ recipe.name }}" width="100" height="100">
+    <a href="{{ url_for('recipe_detail', recipe_id=recipe.index) }}">{{ recipe.index }} - {{ recipe.name }}</a>
+</li>
+{% endfor %}
