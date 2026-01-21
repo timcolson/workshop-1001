@@ -21,19 +21,17 @@ Wouldn't it be cool if the search results were dynamic? You're going to make tha
 
 Open `templates/home.html` and replace the search-box div with HTMX-powered code:
 
-```html title="templates/home.html" del={1-4} ins={5-12}
+```html title="templates/home.html" del={2-4} ins={5-10}
 <div class="search-box">
     <form action="{{ url_for('search_recipes') }}" method="get">
         <input type="search" name="q" placeholder="Search recipes...">
     </form>
-<div class="search-box">
     <input type="search"
            name="q"
            placeholder="Search recipes..."
            hx-get="{{ url_for('search_recipes') }}"
            hx-trigger="input changed delay:300ms, search"
            hx-target="#recipe-list">
-</div>
 </div>
 ```
 
@@ -55,10 +53,12 @@ Similar to before, update the server to return a fragment instead of a full page
 
 Open `app.py` and modify the search route:
 
-```python title="app.py" del={2} ins={3}
+```python title="app.py" del={2-4} ins={5}
 def search_recipes():
-    return render_template('search.html', recipes=results, query=query)
-    return render_template('search_results_fragment.html', recipes=results, query=query)
+    return render_template('search.html',
+        recipe_list=results, query=query,
+        page=1, total_pages=1, total_recipes=len(results))
+    return render_template('search_results_fragment.html', recipe_list=results, query=query)
 ```
 
 ## Step 3: Create Search Results Fragment
@@ -68,26 +68,14 @@ Create a new template file: `templates/search_results_fragment.html`
 ```html title="templates/search_results_fragment.html"
 {% if query %}
 <p class="search-info">
-    Found {{ recipes|length }} result{% if recipes|length != 1 %}s{% endif %}
+    Found {{ recipe_list|length }} result{% if recipe_list|length != 1 %}s{% endif %}
     for "{{ query }}"
 </p>
 {% endif %}
 
-{% if recipes %}
+{% if recipe_list %}
 <ul class="recipe-list">
-    {% for recipe in recipes %}
-    <li>
-        <img src="{{ recipe.get_thumbnail_image_url() }}"
-             alt="{{ recipe.name }}" width="50" height="50" />
-        <a href="#"
-           hx-get="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
-           hx-target="#recipe-details"
-           hx-on::after-request="this.closest('body')
-               .querySelector('#recipe-details').classList.remove('empty')">
-            {{ recipe.name }}
-        </a>
-    </li>
-    {% endfor %}
+    {% include "recipe_list_items.html" %}
 </ul>
 {% elif query %}
 <p class="no-results">No recipes found matching "{{ query }}"</p>
