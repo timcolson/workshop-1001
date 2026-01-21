@@ -43,7 +43,9 @@ Open `templates/layout.html` and add the script in the `<head>` section:
 
 Replace the contents of `<body>` in `layout.html` with the following HTML:
 
-```html title="templates/layout.html" ins={1-8}
+```html title="templates/layout.html" ins={3-10} del={2}
+<body>
+{% block content %}{% endblock %}
 <div class="container">
     <div id="recipe-navigation" class="navigation-panel">
         {% block content %}{% endblock %}
@@ -52,6 +54,7 @@ Replace the contents of `<body>` in `layout.html` with the following HTML:
         <p>Select a recipe to view details</p>
     </div>
 </div>
+</body>
 ```
 
 This creates a two-column layout:
@@ -110,9 +113,9 @@ The CSS applies a centered style when the details panel is `empty`. Let's remove
 
 Use HTMX's `hx-on::after-request` attribute to run inline JavaScript.
 
-Open `templates/recipe_list.html` and add another attribute to the detail link:
+Open `templates/recipe_list_items.html` and add another attribute to the detail link:
 
-```html title="templates/recipe_list.html" ins={4-5}
+```html title="templates/recipe_list_items.html" ins={4-5}
 <a href="#"
    hx-get="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
    hx-target="#recipe-details"
