@@ -54,8 +54,11 @@ The baseline app consists of:
 
 4. **Run the webapp**
    ```bash
-   flask run --app app.py
+   flask --app app.py run
    ```
+   :::note[Flask options]
+   When using the `flask` CLI, `app.py` is the default, so you can also use `flask run`. With the  `--app` parameter, you can switch to an alternative, such as `app-htmx.py`.
+   :::
 
 5. **Open in browser**
 
@@ -63,11 +66,13 @@ The baseline app consists of:
 
 </Steps>
 
-:::tip[Success!]
-You should have a working recipe webapp. Browse the list of recipes, view some recipe details, navigate back to the list, go to the next page, and run a search.
+:::tip[Congratulations!]
+You should have a working recipe webapp! 
 :::
 
-## Try It Out
+## Try out the experience
+
+Browse the list of recipes, view some recipe details, navigate back to the list, go to the next page, and run a search.
 
 The app works, but the user experience (UX) isn't great, is it? Why not?
 
