@@ -8,7 +8,11 @@ export default defineConfig({
 	base: '/workshop-1001',
 	integrations: [
 		starlight({
-			title: 'HTMX & Datastar Workshop',
+			title: 'Workshop: Intro to HTMX & Datastar',
+            customCss: [
+                // Relative path to your custom CSS file
+                './src/styles/custom.css',
+            ],
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/timcolson/workshop-1001' }
 			],
