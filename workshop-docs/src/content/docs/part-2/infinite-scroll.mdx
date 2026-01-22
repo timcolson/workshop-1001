@@ -1,31 +1,32 @@
 ---
 title: Infinite Scroll
 description: Load more recipes automatically as user scrolls
+tableOfContents: false
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-Instead of 10 recipes at a time as "pages", wouldn't it be better to load more recipes when the user scrolls to the bottom?
-
-## Optional Side Quest First
 
 :::caution[Side Quest]
-Before you get started with infinite scroll, you might want to try upgrading the **Next** and **Previous** links to use HTMX.
+Before you add infinite scroll, you might try upgrading **Next** and **Previous** links to use HTMX.
 
-Right now, choosing those buttons re-loads the full page, which clears the currently selected recipe detail. If you convert to HTMX, the page of results could target the `#recipe-list` column.
+Currently, paging reloads the whole page. The selected recipe detail gets cleared in the process.
 
-We won't go through the detailed steps because they are similar to what you've already done. Doing is learning, right? 😊
+You have the tools to fix it with HTMX! Add HTMX to Previous/Next links, target the `#recipe-list` column, and adjust the server route to send only partial HTML.
+
+You've seen all these steps before, so you might give it a try. Doing is learning, right? 😊
 :::
 
-## Implementing Infinite Scroll
+Instead of a list of recipes, ten at a time, wouldn't automatic loading more recipes when the user scrolls to the bottom be better? It sure would!
 
-The concept:
+Conceptually, you build automatic scrolling with the following steps: 
 
 1. Add a trigger element at the bottom of the recipe list
-2. When that element comes into view, fetch the next page
-3. Append the new recipes to the existing list
+2. When the trigger element comes into view, fetch the next page
+3. Append the new page of recipes to the existing list
 
-### Key HTMX Attributes for Infinite Scroll
+You'll re-use the existing paging server logic, combined with HTMX attributes:
 
 | Attribute | Purpose |
 |-----------|---------|
@@ -33,42 +34,45 @@ The concept:
 | `hx-trigger` | `intersect once` — fires when element intersects its viewport one time |
 | `hx-swap` | `outerHTML` — replace the entire content of the target |
 
-## Example Implementation
 
-### Step 1: Update the recipe_list_items template
+## Steps to add infinite scroll
+<Steps>
+1. Update the recipe_list_items template
 
-Open `templates/recipe_list_items.html` and add the following at the end
+    Open `templates/recipe_list_items.html` and add the following at the end
 
-```html title="templates/recipe_list_items.html" ins={1-8}
-{% if page < total_pages %} 
-<li>
-    <span hx-target="closest li"
-    hx-trigger="intersect once"
-    hx-swap="outerHTML"
-    hx-get="{{ url_for('recipes_li', page=page+1) }}">Loading More…</span>
-</li>
-{% endif %}
-```
-
-### Step 2: Remove the paging elements from recipe_list template 
-
-Open `templates/recipe_list.html` and remove the entire pagination div
-
-```html title="templates/recipe_list.html" del={1-11}
-<div class="pagination">
-    {% if page > 1 %}
-    <a href="{{ url_for('list_recipes', page=page-1) }}">Previous</a>
+    ```html title="templates/recipe_list_items.html" ins={1-8}
+    {% if page < total_pages %} 
+    <li>
+        <span hx-target="closest li"
+        hx-trigger="intersect once"
+        hx-swap="outerHTML"
+        hx-get="{{ url_for('recipes_li', page=page+1) }}">Loading More…</span>
+    </li>
     {% endif %}
+    ```
 
-    <span class="current">Page {{ page }} of {{ total_pages }}</span>
+2. Remove paging from recipe_list template 
 
-    {% if page < total_pages %}
-    <a href="{{ url_for('list_recipes', page=page+1) }}">Next</a>
+    Open `templates/recipe_list.html` and remove the entire pagination div:
+
+    ```html title="templates/recipe_list.html" del={1-11}
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('list_recipes', page=page-1) }}">Previous</a>
         {% endif %}
-</div>
-```
 
-**Stop and restart the server.**
+        <span class="current">Page {{ page }} of {{ total_pages }}</span>
+
+        {% if page < total_pages %}
+        <a href="{{ url_for('list_recipes', page=page+1) }}">Next</a>
+            {% endif %}
+    </div>
+    ```
+
+3. Stop and restart the server.
+
+</Steps>
 
 :::tip[Success!]
 You should now have infinite scrolling!
@@ -82,4 +86,4 @@ You should now have infinite scrolling!
 3. **[Transclusion](https://en.wikipedia.org/wiki/Transclusion)**: New recipes are inserted, replacing the target `<li>` with actual content + a new trigger `<li>` element.
 4. **Repeat**: Process continues until no more pages
 
-Ready to explore an alternative approach? Check out [Part III: Datastar](/part-3/).
+Ready to explore an alternative approach? Check out [Part III: Datastar](/workshop-1001/part-3/).

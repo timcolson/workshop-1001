@@ -11,24 +11,23 @@ Displaying recipe details inline on the page, without a separate page load, woul
 
 **How?** Imagine you could send the selected recipe ID to the server, get back recipe details, and show the recipe in a second column.
 
-:::tip[Good news!]
-The CSS already defines styles for flex-columns, called `navigation-panel` & `details-panel`.
+:::note[Good news!]
+The CSS already defines styles for flex-columns, called `navigation-panel` & `details-panel`. You will use these two styles to create a two-column layout for navigation and recipe details.
 :::
 
-## Implementation Steps
+## Implementation overview
 
 <Steps>
-
-1. Add the HTMX library in the layout
-2. Update the layout with a container for two divs
-3. Create a link that requests recipe details for a recipe ID
-4. Display recipe details in the `#recipe-details` div
-
+1. Add the HTMX library 
+2. Add two-pane layout
+3. Make recipe links dynamic
+4. Return recipe details HTML fragment
 </Steps>
 
-## Step 1: Add HTMX to the Project
 
-Load HTMX in the layout template which is used for all full pages.
+## Step 1: Load HTMX library
+
+The `layout` temlate is used by all pages, so it's a great place to load HTMX.
 
 Open `templates/layout.html` and add the script in the `<head>` section:
 
@@ -39,7 +38,7 @@ Open `templates/layout.html` and add the script in the `<head>` section:
 </head>
 ```
 
-## Step 2: Update Layout for Split Panel
+## Step 2: Add a two-pane layout
 
 Replace the contents of `<body>` in `layout.html` with the following HTML:
 
@@ -61,7 +60,9 @@ This creates a two-column layout:
 - **Left column** (`recipe-navigation`): Recipe list
 - **Right column** (`recipe-details`): Details panel with placeholder
 
-## Step 3: Add HTMX to Recipe Links
+## Step 3: Make Links Dynamic
+
+Now, convert the recipe link that goes to recipe details for a recipe ID, to a dynamic call using hx- attributes:
 
 Open `templates/recipe_list_items.html` and find the recipe detail link:
 
@@ -82,19 +83,23 @@ Replace the `href` value with `#` and add HTMX attributes:
 
 **Refresh your browser and select a recipe!**
 
-:::note[Wow!]
+:::tip[Wow! Look what you did!]
 You should already see **dynamic loading** of recipe details! The result isn't perfect, but we'll fix that in the next step.
 :::
 
-**How is this working?** The new recipe link invokes HTMX to handle the request. HTMX calls the server and puts the results into the `target` div.
+**How is this working?** The new recipe link invokes HTMX to handle the request. HTMX calls the server and puts the resulting HTML into the `target` div.
 
-The server is still sending an **entire page** wrapped in `layout.html`. So you're getting extra HTML that you don't need.
+**One problem:** The server is still sending an **entire page**, wrapped in `layout.html`. So you're getting extra HTML that you don't need. 
 
-## Step 4: Return Only the Fragment
+In the next step, you'll edit the server route to only send the HTML you need.
 
-Update the server to return partial HTML for HTMX requests.
+## Step 4: Return a fragment
 
-Open `app.py` and add this **before** the return statement in `recipe_detail()`:
+Update your server to only return partial HTML for HTMX requests.
+
+For requests from HTMX, the **HX-Request** header is present. With that info, your server action can choose a different template — in this case, only the HTML produced by `recipe_detail_fragment`.
+
+Open `app.py` and add the following header check **before** the return statement in `recipe_detail()`:
 
 ```python title="app.py" ins={2-3}
 def recipe_detail(recipe_id):
@@ -102,30 +107,31 @@ def recipe_detail(recipe_id):
         return render_template('recipe_detail_fragment.html', recipe=recipe)
     return render_template('recipe.html', recipe=recipe)
 ```
+Reload to check it out. You might need to Stop and restart the server. 
 
-**Stop and restart the server.**
+## Step 5: Fix formatting
 
-For requests from HTMX, the **HX-Request** header is present. With that info, your server action can choose a different template — in this case, only the HTML produced by `recipe_detail_fragment`.
+One problem you might notice. The CSS applies the same **centered** style when the details panel were `empty`. When there are recipe details, the centered style doesn't look good. 
 
-## Step 5: Fix the Formatting
+You need to remove the `empty` class after loading the recipe content.
 
-The CSS applies a centered style when the details panel is `empty`. Let's remove that class after loading content.
+Fortunatley, you can use HTMX's `hx-on::after-request` attribute to run inline JavaScript to remove the style after the content has loaded.
 
-Use HTMX's `hx-on::after-request` attribute to run inline JavaScript.
+1. Open `templates/recipe_list_items.html`.
+2. Add the `hx-on` attribute to the detail link:
 
-Open `templates/recipe_list_items.html` and add another attribute to the detail link:
+    ```html title="templates/recipe_list_items.html" ins={4-5}
+    <a href="#"
+    hx-get="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
+    hx-target="#recipe-details"
+    hx-on::after-request="this.closest('body')
+        .querySelector('#recipe-details').classList.remove('empty')">
+        {{ recipe.name }}
+    </a>
+    ```
+3. Refresh the page, then select a recipe.
 
-```html title="templates/recipe_list_items.html" ins={4-5}
-<a href="#"
-   hx-get="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
-   hx-target="#recipe-details"
-   hx-on::after-request="this.closest('body')
-       .querySelector('#recipe-details').classList.remove('empty')">
-    {{ recipe.name }}
-</a>
-```
-
-**Refresh the page, then select a recipe.** The recipe details should look great now!
+The recipe details should look great now, right! 
 
 :::tip[Learn More]
 HTMX provides many more attributes. Check the [HTMX Reference - Core Attributes](https://htmx.org/reference/#attributes).
@@ -133,4 +139,4 @@ HTMX provides many more attributes. Check the [HTMX Reference - Core Attributes]
 HTMX also applies a CSS class (`htmx-indicator`) while a request is ongoing — useful for displaying a "Loading..." message.
 :::
 
-Next up: [Live Search Results](/part-2/live-search)
+Next up: Upgrade your app with [Live Search Results](/part-2/live-search)

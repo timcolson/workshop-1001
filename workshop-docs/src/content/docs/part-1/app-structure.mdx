@@ -1,0 +1,70 @@
+---
+title: Understanding the App Structure
+description: Upgrade to a dynamic app with HTMX
+tableOfContents: false
+---
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { FileTree } from '@astrojs/starlight/components';
+
+You will upgrade the app to dynamically show recipe details, return live search results, and infinitely scroll the recipe list.
+
+## App Structure
+
+Before you make changes, you need to see how the app is currently structured.
+
+The recipe app is built with [Flask](https://flask.palletsprojects.com/en/stable/) which is a well-known web framework for Python:
+
+<FileTree>
+- **app.py**   - Main entry point with routes
+- models.py   - Recipe data model and repository
+- templates/        HTML templates using Jinja2  
+    - layout.html   Common layout code used by full pages
+    - home.html  
+    - recipe.html  
+    - search.html
+    - recipe_list.html Fragment with recipe list and pagination
+    - recipe_list_items Fragment with recipe items
+</FileTree>
+In addition, we've provided end-state files. Review only if you get stuck. 
+- *`app-htmx.py` -- End-state entry point for reference.* 
+- *`templates-htmx/` -- End-state templates for reference.*   
+
+:::note[Log Filtering]
+In `app.py`, you might notice `Status304Filter` for logging. The filter declutters log output by **not** logging when static assets, such as CSS, are reported as `Not Modified (304)`.
+:::
+
+## Routes and Templates
+
+Each route in the app performs an action, such as retrieving recipe data, and renders HTML output with a template. Depending on your needs, a route can return a full HTML page or a smaller fragment of HTML.
+
+The flexibility for routes to send back varying amounts of HTML will be important for making dynamic upgrades!
+
+- **Standalone** or _full page_ templates 
+    - Examples: `home.html`, `recipe.html`, `search.html`
+    - Full pages also extend a common `layout.html` template
+- **Layout** includes page structure, HTML heading, and common elements, such as CSS, JavaScript
+- Templates can include small reusable page fragments.
+
+
+## HTMX Upgrades
+
+Take a couple minutes to familiarize yourself with the code base, then move on to the **upgrades**.
+
+<CardGrid>
+  <LinkCard
+    title="Inline Recipe Details"
+    description="Display details in a side panel without page reload"
+    href="/part-2/inline-details"
+  />
+  <LinkCard
+    title="Live Search Results"
+    description="Dynamic search with debouncing"
+    href="/part-2/live-search"
+  />
+  <LinkCard
+    title="Infinite Scroll"
+    description="Load more recipes as user scrolls"
+    href="/part-2/infinite-scroll"
+  />
+</CardGrid>

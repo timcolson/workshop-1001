@@ -1,11 +1,17 @@
 ---
 title: Live Search Results
 description: Dynamic search with debouncing as you type
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 2
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 
-Wouldn't it be cool if the search results were dynamic? You're going to make that happen now!
+
+Wouldn't it be cool if the search results were dynamic? Results appear as you type.
+
+You're going to make that happen now! 
 
 ## How It Works
 
@@ -61,11 +67,12 @@ def search_recipes():
     return render_template('search_results_fragment.html', recipe_list=results, query=query)
 ```
 
-## Step 3: Create Search Results Fragment
+## Step 3: Create results fragment
+
 
 Create a new template file: `templates/search_results_fragment.html`
 
-```html title="templates/search_results_fragment.html"
+```html showLineNumbers title="templates/search_results_fragment.html" ins={1-14}
 {% if query %}
 <p class="search-info">
     Found {{ recipe_list|length }} result{% if recipe_list|length != 1 %}s{% endif %}
@@ -83,7 +90,8 @@ Create a new template file: `templates/search_results_fragment.html`
 ```
 
 :::tip[Success!]
-You should now have dynamic search results! Type in the search box and watch results appear automatically.
+You should now have dynamic search results! 
+
+Type in the search box and watch results appear automatically.
 :::
 
-Next up: [Infinite Scroll](/part-2/infinite-scroll)
