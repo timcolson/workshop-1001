@@ -30,36 +30,56 @@ The concept:
 | Attribute | Purpose |
 |-----------|---------|
 | `hx-get` | URL to fetch next page of recipes |
-| `hx-trigger` | `revealed` — fires when element scrolls into viewport |
-| `hx-swap` | `afterend` — append content after the trigger element |
+| `hx-trigger` | `intersect once` — fires when element intersects its viewport one time |
+| `hx-swap` | `outerHTML` — replace the entire content of the target |
 
-### Example Implementation
+## Example Implementation
 
-```html title="templates/recipe_list.html" ins={5-9}
-<ul class="recipe-list">
-    {% for recipe in recipes %}
-    <!-- recipe items -->
-    {% endfor %}
-    <li hx-get="{{ url_for('recipe_list', page=next_page) }}"
-        hx-trigger="revealed"
-        hx-swap="outerHTML"
-        hx-indicator=".loading-spinner">
-        Loading more recipes...
-    </li>
-</ul>
+### Step 1: Update the recipe_list_items template
+
+Open `templates/recipe_list_items.html` and add the following at the end
+
+```html title="templates/recipe_list_items.html" ins={1-8}
+{% if page < total_pages %} 
+<li>
+    <span hx-target="closest li"
+    hx-trigger="intersect once"
+    hx-swap="outerHTML"
+    hx-get="{{ url_for('recipes_li', page=page+1) }}">Loading More…</span>
+</li>
+{% endif %}
 ```
 
-:::note[Implementation TODO]
-This section is a work in progress. The full implementation will use the `hx-on*` attributes.
+### Step 2: Remove the paging elements from recipe_list template 
 
-Hint: Check out [hx-on*](https://htmx.org/attributes/hx-on/) in the HTMX docs.
+Open `templates/recipe_list.html` and remove the entire pagination div
+
+```html title="templates/recipe_list.html" del={1-11}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('list_recipes', page=page-1) }}">Previous</a>
+    {% endif %}
+
+    <span class="current">Page {{ page }} of {{ total_pages }}</span>
+
+    {% if page < total_pages %}
+    <a href="{{ url_for('list_recipes', page=page+1) }}">Next</a>
+        {% endif %}
+</div>
+```
+
+**Stop and restart the server.**
+
+:::tip[Success!]
+You should now have infinite scrolling!
 :::
+
 
 ## How It Works
 
 1. **Initial load**: Shows first 10 recipes plus a "trigger" element at the bottom
-2. **User scrolls**: When trigger element becomes visible (`revealed`), HTMX fetches next page
-3. **Append**: New recipes are inserted, replacing the trigger with actual content + new trigger
+2. **User scrolls**: When trigger element becomes visible (`intersect once`), HTMX fetches next page
+3. **[Transclusion](https://en.wikipedia.org/wiki/Transclusion)**: New recipes are inserted, replacing the target `<li>` with actual content + a new trigger `<li>` element.
 4. **Repeat**: Process continues until no more pages
 
 Ready to explore an alternative approach? Check out [Part III: Datastar](/part-3/).
