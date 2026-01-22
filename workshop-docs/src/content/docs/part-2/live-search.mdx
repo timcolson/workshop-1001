@@ -7,7 +7,7 @@ tableOfContents:
 ---
 
 import { Steps } from '@astrojs/starlight/components';
-
+import { Badge } from '@astrojs/starlight/components';
 
 Wouldn't it be cool if the search results were dynamic? Results appear as you type.
 
@@ -55,24 +55,25 @@ The `delay:300ms` prevents sending a request on every keystroke. The request fir
 
 ## Step 2: Update Server Response
 
-Similar to before, update the server to return a fragment instead of a full page.
+Similar to before, update the server to return a **fragment** of HTML instead of a full page.
 
-Open `app.py` and modify the search route:
+Open `app.py` and modify the search route to return only the results:
 
-```python title="app.py" del={2-4} ins={5}
+```python title="app.py" del={2} ins={3} showLineNumbers=true
 def search_recipes():
     return render_template('search.html',
+    return render_template('search_results_fragment.html',
         recipe_list=results, query=query,
         page=1, total_pages=1, total_recipes=len(results))
-    return render_template('search_results_fragment.html', recipe_list=results, query=query)
 ```
+
+<Badge text="Note" variant="note" /> Without testing for `HX-Request` header, the legacy full-page search will no longer work. 
 
 ## Step 3: Create results fragment
 
+For the search results only, create a new template file: `templates/search_results_fragment.html`
 
-Create a new template file: `templates/search_results_fragment.html`
-
-```html showLineNumbers title="templates/search_results_fragment.html" ins={1-14}
+```html showLineNumbers title="templates/search_results_fragment.html" 
 {% if query %}
 <p class="search-info">
     Found {{ recipe_list|length }} result{% if recipe_list|length != 1 %}s{% endif %}
@@ -88,10 +89,12 @@ Create a new template file: `templates/search_results_fragment.html`
 <p class="no-results">No recipes found matching "{{ query }}"</p>
 {% endif %}
 ```
+Lines 1-6 render search info if a query term exists.
+If a list of recipes exist, lines 8-12 render that list with an included fragment that is used for each recipe item.
 
-:::tip[Success!]
-You should now have dynamic search results! 
-
-Type in the search box and watch results appear automatically.
+:::tip[Houston, we have lift off!]
+Try a search for `pie`. You should see dynamic search results appear automatically! 
 :::
 
+You might be wondering why there are separate templates for `recipe_list` and `recipe_list_items`. 
+In the next section, that separation will be helpful for updating the ***items*** inside the list.  
