@@ -52,13 +52,20 @@ Open `templates/recipe_list_items.html` and add the following at the end
 
 ### Step 2: Remove the paging elements from recipe_list template 
 
-Open `templates/recipe_list.html` and remove the following
+Open `templates/recipe_list.html` and remove the entire pagination div
 
-```html title="templates/recipe_list.html" del={1-5}
-<span class="current">Page {{ page }} of {{ total_pages }}</span>
-{% if page < total_pages %}
-<a href="{{ url_for('list_recipes', page=page+1) }}">Next</a>
-{% endif %}
+```html title="templates/recipe_list.html" del={1-11}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('list_recipes', page=page-1) }}">Previous</a>
+    {% endif %}
+
+    <span class="current">Page {{ page }} of {{ total_pages }}</span>
+
+    {% if page < total_pages %}
+    <a href="{{ url_for('list_recipes', page=page+1) }}">Next</a>
+        {% endif %}
+</div>
 ```
 
 **Stop and restart the server.**
@@ -72,7 +79,7 @@ You should now have infinite scrolling!
 
 1. **Initial load**: Shows first 10 recipes plus a "trigger" element at the bottom
 2. **User scrolls**: When trigger element becomes visible (`intersect once`), HTMX fetches next page
-3. **Append**: New recipes are inserted, replacing the target `<li>` with actual content + new trigger
+3. **[Transclusion](https://en.wikipedia.org/wiki/Transclusion)**: New recipes are inserted, replacing the target `<li>` with actual content + a new trigger `<li>` element.
 4. **Repeat**: Process continues until no more pages
 
 Ready to explore an alternative approach? Check out [Part III: Datastar](/part-3/).
