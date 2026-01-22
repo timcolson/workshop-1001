@@ -54,10 +54,11 @@ The baseline app consists of:
 
 4. **Run the webapp**
    ```bash
-   flask --app app.py run
+   flask --app app.py run --debug
    ```
    :::note[Flask options]
    With the `flask` command, `app.py` is the default. You can leave it out and use: `flask run`. With the `--app` option, you can switch to an alternative app, such as `app-htmx.py`.
+   The `--debug` argument causes flask to watch for changes and reload as necessary while you work.
    :::
 
 5. **Open in browser**

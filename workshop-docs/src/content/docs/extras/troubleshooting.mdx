@@ -23,7 +23,7 @@ description: Common issues and how to fix them
 
 ```bash
 cd /path/to/workshop-1001
-flask --app app.py run
+flask --app app.py run --debug
 ```
 
 ### HTMX requests not working
@@ -69,7 +69,7 @@ def recipe_detail(recipe_id):
 1. **Restart Flask** — templates are often cached
    ```bash
    # Stop with Ctrl+C, then restart
-   flask --app app.py run
+   flask --app app.py run --debug
    ```
 
 2. **Hard refresh browser** — `Cmd+Shift+R` (Mac) or `Ctrl+Shift+R` (Windows)

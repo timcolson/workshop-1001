@@ -23,7 +23,7 @@ npm run dev
 python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install flask
-flask --app app.py run
+flask --app app.py run --debug # debug causes flask to reload on changes
 # Open http://127.0.0.1:5000
 ```
 
