@@ -1,3 +1,7 @@
+
+/* Base styles: */
+/* https://github.com/withastro/starlight/blob/main/packages/starlight/style/props.css 
+
 /* Dark mode colors. */
 :root {
 	--sl-color-accent-low: #00273d;
@@ -15,6 +19,46 @@
     --sl-color-purple: var(--sl-color-green);
     --sl-color-purple-low: var(--sl-color-green-low);
     --sl-color-purple-high: var(--sl-color-green-high);
+
+        /* --sl-text-body: var(--sl-text-base);
+		--sl-text-body-sm: var(--sl-text-xs);
+		--sl-text-code: var(--sl-text-sm);
+		--sl-text-code-sm: var(--sl-text-xs);
+		--sl-text-h1: var(--sl-text-4xl);
+		--sl-text-h2: var(--sl-text-3xl);
+		--sl-text-h3: var(--sl-text-2xl);
+		--sl-text-h4: var(--sl-text-xl);
+		--sl-text-h5: var(--sl-text-lg); */
+
+        /* Text size and line height */
+    --sl-text-2xs: 0.75rem; /* 12px */
+    --sl-text-xs: 0.8125rem; /* 13px */
+    --sl-text-sm: 0.875rem; /* 14px */
+    --sl-text-base: 1rem; /* 16px */
+    --sl-text-lg: 1.125rem; /* 18px */
+    --sl-text-xl: 1.25rem; /* 20px */
+    --sl-text-2xl: 1.1rem; /* 24px Workshop Title */
+    --sl-text-3xl: 1.125rem; /* 29px */
+    --sl-text-4xl: 1.32rem; /* 29px - Sub-Headings */
+    --sl-text-5xl: 2rem; /* 35px - Page Headings */
+    --sl-text-6xl: 4rem; /* 64px */
+
+        /** Key layout values */
+		--sl-nav-height: 2.7rem;
+		--sl-nav-pad-x: .5rem;
+		--sl-nav-pad-y: 0.25rem;
+		--sl-mobile-toc-height: 2.5rem;
+		--sl-sidebar-width: 14rem;
+		--sl-sidebar-pad-x: .25rem;
+		--sl-content-width: 55rem;
+		--sl-content-pad-x: 1rem;
+		--sl-content-gap-y: 1rem;
+		--sl-main-pad: 0 0 3vh 0;
+		--sl-menu-button-size: 2rem;
+		--sl-nav-gap: var(--sl-content-pad-x);
+		/* Offset required to show outline inside an element instead of round the outside */
+		--sl-outline-offset-inside: -0.1875rem;
+
 }
 /* Light mode colors. */
 :root[data-theme='light'] {
@@ -34,4 +78,18 @@
     --sl-color-purple: var(--sl-color-green);
     --sl-color-purple-low: var(--sl-color-green-low);
     --sl-color-purple-high: var(--sl-color-green-high);
+
+   
+}
+
+@layer starlight, my-starlight-sidebar;
+
+@layer my-starlight-sidebar {
+  sl-sidebar-state-persist ul.top-level > li:not(:has(details)) {
+    margin-block: 0rem;
+  }
+  sl-sidebar-state-persist ul.top-level > li > a:not([aria-current="page"]) {
+    font-weight: 500;
+    color: var(--sl-color-gray-1);
+  }
 }
