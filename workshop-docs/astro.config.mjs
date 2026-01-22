@@ -28,13 +28,13 @@ export default defineConfig({
                     items: [
                         { label: 'Setup & Run', slug: 'part-1/setup' },
                         { label: 'Why Upgrade?', slug: 'part-1/why-upgrade' },
+                        { label: 'App Structure', slug: 'part-1/app-structure' },
                     ],
                 },
                 {
-                    label: 'Part II: HTMX Upgrades',
+                    label: 'Part II: HTMX',
                     collapsed: true,
                     items: [
-                        { label: 'App Structure', slug: 'part-2' },
                         { label: 'Inline Recipe Details', slug: 'part-2/inline-details' },
                         { label: 'Live Search Results', slug: 'part-2/live-search' },
                         { label: 'Infinite Scroll', slug: 'part-2/infinite-scroll' },
@@ -44,7 +44,7 @@ export default defineConfig({
                     label: 'Part III: Datastar',
                     collapsed: true,
                     items: [
-                        { label: 'Comparison', slug: 'part-3' },
+                        { label: 'Introduction', slug: 'part-3' },
                     ],
                 },
                 {
@@ -56,17 +56,6 @@ export default defineConfig({
                     ],
                 },
             ],
-            // Expressive Code configuration for highlighting HTMX additions
-            expressiveCode: {
-                themes: ['github-dark', 'github-light'],
-                styleOverrides: {
-                    // Custom styles for marked (ins) lines - green for additions
-                    textMarkers: {
-                        markHue: '130', // Green hue
-                        lineDiffIndicatorMarginLeft: '0.5em',
-                    },
-                },
-            },
         }),
         mermaid({
             theme: 'forest',
