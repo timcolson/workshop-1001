@@ -1,9 +1,10 @@
 ---
 title: Intro to HTMX & Datastar with Python
 description: Build dynamic web apps without the JavaScript complexity
+tableOfContents: false
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, Steps } from '@astrojs/starlight/components';
 
 Want to make a dynamic web app, without a bunch of JavaScript or React?
 
@@ -15,28 +16,19 @@ Some concepts might not be explained correctly. We are all learning. If you have
 
 ## What You'll Build
 
-<CardGrid>
-  <Card title="Inline Recipe Details" icon="document">
-    Display recipe details without page reloads
-  </Card>
-  <Card title="Live Search" icon="magnifier">
-    Dynamic search results as you type
-  </Card>
-  <Card title="Infinite Scroll" icon="down-caret">
-    Load more recipes automatically on scroll
-  </Card>
-  <Card title="Datastar Comparison" icon="random">
-    Explore an alternative hypermedia approach
-  </Card>
-</CardGrid>
+<Steps>
+1. Dynamic inline recipe details - Display recipe details without page reloads
+2. Live Search - Dynamic search results as you type
+3. Infinite Scroll - Load more recipes automatically on scroll
+</Steps>
 
 ## Workshop Structure
 
 | Part | Topic | Duration |
-|------|-------|----------|
+|-----:|-------|----------|
 | **I** | Baseline HTML Recipes Web App | ~10 min |
-| **II** | Upgrade to Dynamic App with HTMX | ~40 min |
-| **III** | Datastar Alternative | Optional |
+| **II** | Upgrade to Dynamic App with [HTMX](https://htmx.org/) | ~30 min |
+| **III** | Upgrade to Dynamic App with  [Datastar](https://data-star.dev/) | Optional - Untested! |
 
 ## Recipe Data Source
 
