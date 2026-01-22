@@ -15,35 +15,113 @@ What are some ways you might upgrade the app to be more fluid?
 
 ### Web 1.0 (circa 1990)
 
-The original World Wide Web model:
+In the original model for the World Wide Web, users send HTTP requests to a server and receive a **complete** HTML response. :
 
+```mermaid
+graph LR
+    A((User)) -->|HTTP Request| B[Server]
+    B -->|HTML Response| A
+    
+    classDef userNode fill:#0071a7,stroke:#92d1fe,stroke-width:2px,color:#ffffff
+    classDef serverNode fill:#2a3b41,stroke:#92a6ad,stroke-width:2px,color:#e7eff2
+    
+    class A userNode
+    class B serverNode
 ```
-User → Request (HTTP) → Server → Response (HTML)
-```
+
 
 ### Single Page Applications (2005+)
 
-AJAX ushered in asynchronous dynamic websites. Google Mail was one of the first examples:
+About 15 years later, AJAX ushered in asynchronous dynamic websites. Google Mail was one of the first examples. 
 
+The server delivers an HTML and JavaScript bundle. From that point forward, AJAX requests are made to exchange **JSON** data with the server.
+
+```mermaid
+flowchart TB
+    A(("User")) -- HTTP Request --> B["Server"]
+    B == "1 x HTML" ==> C["SPA (HTML + JavaScript)"]
+    B L_B_C_2@-- JSON --> C
+    C L_C_B_0@-- AJAX requests --> B
+
+    B@{ shape: proc}
+    C@{ shape: subproc}
+     A:::userNode
+     B:::serverNode
+     C:::appNode
+    classDef userNode fill:#0071a7,stroke:#92d1fe,stroke-width:2px,color:#ffffff
+    classDef serverNode fill:#2a3b41,stroke:#92a6ad,stroke-width:2px,color:#e7eff2
+    classDef appNode fill:#00273d,stroke:#0071a7,stroke-width:2px,color:#92d1fe
+
+    L_B_C_2@{ animation: slow } 
+    L_C_B_0@{ curve: natural, animation: slow }
 ```
-User → Request → Server → SPA (HTML + JS) → Request from App → Response (JSON) → repeat
-```
+
 
 ### Hypermedia Frameworks (2020+)
 
-JavaScript is ubiquitous. Web front ends are amazing but also complex. Users want dynamic webapps. Developers struggle with the complexity. Sometimes, you just need dynamic HTML.
+JavaScript is ubiquitous. Web front ends are amazing but also complex. Users want dynamic webapps. Developers struggle with the complexity. Sometimes, you just need dynamic HTML without the overhead of JavaScript frameworks.
 
 **HTMX approach:**
+
+With HTMX, you extend standard HTML with `hx-*` attributes, for example `hx-get:` to make a request to the server, or `hx-on` to trigger JavaScript actions. 
+
+The key difference from the SPA model, shown in the diagram, is that **HTML fragments** are sent to the front end and automatically added into the DOM by HTMX.  
+
+In HTMX, the front end drives most of the state changes. For ongoing updates from the server, HTMX uses WebSockets, with a client-side listener. For complex interactions, the HTMX team suggests pairing HTMX with the Alpine.js framework. 
+
+```mermaid
+flowchart TB
+    A(("User")) -- HTTP Request --> B["Server"]
+    B == "HTML" ==> C["HTML + HTMX"]
+    B L_B_C_2@-- "Partial HTML" --> C
+    C L_C_B_0@-- "hx-* requests" --> B
+
+    B@{ shape: proc}
+    C@{ shape: subproc}
+     A:::userNode
+     B:::serverNode
+     C:::appNode
+    classDef userNode fill:#0071a7,stroke:#92d1fe,stroke-width:2px,color:#ffffff
+    classDef serverNode fill:#2a3b41,stroke:#92a6ad,stroke-width:2px,color:#e7eff2
+    classDef appNode fill:#00273d,stroke:#0071a7,stroke-width:2px,color:#92d1fe
+
+    L_B_C_2@{ animation: slow } 
+    L_C_B_0@{ curve: natural, animation: slow }
 ```
-User → Request → Server → (HTML + HTMX) → Request from App → Partial Response (HTML) → repeat
-```
+
 
 **Datastar approach:**
-```
-User → Request → Server → (HTML + Datastar) → Server Sent Event (SSE) → Signal to patch DOM → repeat
+
+Datastar follows a similar approach to HTMX, adding attributes with the `data-*` prefix. Attributes prefixed with `data-` are actually part of the HTML specification. 
+
+The Datastar library, similar to HTMX, is a bit of JavaScript that can make requests to the server. 
+
+Datastar includes data binding for front-end functionality similar to Alpine.js. Reactivity is through *signals* which can be thought of as reactive variables that automatically track and propagate changes in and to Datastar expressions. Signals are denoted using the $ prefix.
+
+The big difference in philosphy seems to be the **Server** drives front end state changes. The front-end sends info to the back end, and the server sends update signals via Server Sent Events (SSE).  
+
+```mermaid
+flowchart TB
+    A(("User")) -- HTTP Request --> B["Server"]
+    B == "Initial HTML" ==> C["HTML + Datastar"]
+    B L_B_C_2@-- "SSE Signals + partial HTML to patch DOM" --> C
+    C L_C_B_0@-- "data-* requests" --> B
+
+    B@{ shape: proc}
+    C@{ shape: subproc}
+     A:::userNode
+     B:::serverNode
+     C:::appNode
+    classDef userNode fill:#0071a7,stroke:#92d1fe,stroke-width:2px,color:#ffffff
+    classDef serverNode fill:#2a3b41,stroke:#92a6ad,stroke-width:2px,color:#e7eff2
+    classDef appNode fill:#00273d,stroke:#0071a7,stroke-width:2px,color:#92d1fe
+
+    L_B_C_2@{ animation: slow } 
+    L_C_B_0@{ curve: natural, animation: slow }
 ```
 
-## Hypermedia First
+
+## Hypermedia First Approach
 
 Both HTMX and Datastar feature a *hypermedia first* approach:
 
@@ -52,7 +130,7 @@ Both HTMX and Datastar feature a *hypermedia first* approach:
 
 ### HTMX Example
 
-Click invokes a GET action, server sends back HTML:
+Selecting the following href invokes a GET action, and the server sends back HTML:
 
 ```html title="recipe link with HTMX"
 <a href="#"
@@ -62,7 +140,7 @@ Click invokes a GET action, server sends back HTML:
 
 ### Datastar Example
 
-Click invokes a GET action, server sends an event back with data:
+Selecting the following href invokes a GET action, and the server sends an event back with data:
 
 ```html title="button with Datastar"
 <button data-on:click="@get('/endpoint')">
@@ -71,12 +149,11 @@ Click invokes a GET action, server sends an event back with data:
 <div id="hal"></div>
 ```
 
-## Key Differences
+## Summary of Key Differences
 
-HTMX adds new `hx-` prefixed attributes to existing HTML tags. Datastar extends HTML through `data-` prefixed attributes using the HTML `data-*` standard (hence the name "data star").
+- HTMX adds `hx-` prefixed attributes to existing HTML tags. 
+- Datastar extends HTML through `data-` prefixed attributes using the HTML `data-*` standard (hence the name "data star").
+- Both rely on JavaScript, but JavaScript is somewhat hidden from you, the developer.
 
-Both rely on JavaScript to do their thing, but JavaScript is somewhat hidden from you, the developer.
+We'll explore the similarities and differences in detail later, but for now, let's dive into HTMX!
 
-We'll explore the similarities and differences later, but let's dive into some upgrades with HTMX!
-
-Ready? Head to [Part II: HTMX Upgrades](/part-2/).
