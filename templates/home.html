@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>Recipe Browser</h1>
-<p>Browse {{ total_recipes }} delicious recipes</p>
+<p>Browse  <a href="{{ url_for('home') }}">all {{ total_recipes }} recipes</a>.</p>
 
 <div class="search-box">
     <form action="{{ url_for('search_recipes') }}" method="get">
