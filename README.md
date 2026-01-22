@@ -4,6 +4,8 @@ Want to make a dynamic web app without JavaScript or React complexity?
 
 With [HTMX](https://htmx.org/) or [Datastar](https://data-star.dev/), your server-side Python sends HTML to dynamically update the view. This workshop teaches the model for building reactive websites using hypermedia frameworks.
 
+**Workshop instructions: https://timcolson.github.io/workshop-1001/**
+
 ## Workshop Documentation
 
 Full instructions are in the **[workshop-docs/](workshop-docs/)** folder, built with Astro Starlight.
