@@ -69,7 +69,7 @@ You'll re-use the existing paging server logic, combined with HTMX attributes:
     </div>
     ```
 
-3. Stop and restart the server.
+3. Refresh the browser.
 
 </Steps>
 
@@ -84,5 +84,7 @@ You should now have infinite scrolling!
 2. **User scrolls**: When trigger element becomes visible (`intersect once`), HTMX fetches next page
 3. **[Transclusion](https://en.wikipedia.org/wiki/Transclusion)**: New recipes are inserted, replacing the target `<li>` with actual content + a new trigger `<li>` element.
 4. **Repeat**: Process continues until no more pages
+
+...HTMX has [triggers](https://htmx.org/attributes/hx-trigger/) for `revealed` and `intersect`. Both those triggers deal with elements becoming visible in a viewport but there are [differences](https://htmx.org/examples/infinite-scroll/). 
 
 Ready to explore an alternative approach? Check out [Part III: Datastar](/workshop-1001/part-3/).
