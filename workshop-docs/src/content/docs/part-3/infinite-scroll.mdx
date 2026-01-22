@@ -1,0 +1,193 @@
+---
+title: Infinite Scroll with Datastar
+description: Load more recipes automatically as user scrolls using SSE
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+:::danger[Danger! Work in Progress! Here be Dragons!]
+2026-01-22 8:31:42AM MST - Datastar additions were made by Claude.ai and have **NOT** been tested! 
+:::
+
+:::caution[Side Quest]
+Before you add infinite scroll, you might try upgrading **Next** and **Previous** links to use Datastar.
+
+Currently, paging reloads the whole page. The selected recipe detail gets cleared in the process.
+
+You have the tools to fix it with Datastar! Add Datastar to Previous/Next links, target the recipe list signal, and adjust the server route to send SSE updates.
+
+You've seen all these steps before, so you might give it a try. Doing is learning, right? 😊
+:::
+
+Instead of a list of recipes, ten at a time, wouldn't automatic loading more recipes when the user scrolls to the bottom be better? It sure would!
+
+With Datastar, you can use Server-Sent Events to automatically load more content as the user scrolls, keeping the logic server-driven.
+
+Conceptually, you build automatic scrolling with the following steps:
+
+1. Add an intersection observer trigger at the bottom of the recipe list
+2. When the trigger comes into view, send SSE request for next page
+3. Server pushes new recipes via SSE
+4. Client reactively updates the list
+
+You'll use Datastar's reactive signals combined with SSE:
+
+| Attribute | Purpose |
+|-----------|---------|
+| `data-on:intersect` | Fires when element intersects viewport |
+| `data-sse` | Establishes SSE connection |
+| `@get` | Triggers SSE request |
+
+## To add infinite scroll with Datastar
+<Steps>
+1. Add pagination signals
+
+    Open `templates/layout.html` and add pagination-related signals:
+
+    ```html title="templates/layout.html" ins={9-12}
+    <script>
+        // Initialize Datastar signals
+        const selectedRecipe = Datastar.signal(null);
+        const recipeDetails = Datastar.signal('<p>Select a recipe to view details</p>');
+        
+        // Search signals
+        const searchQuery = Datastar.signal('');
+        const searchResults = Datastar.signal([]);
+        
+        // Pagination signals
+        const currentPage = Datastar.signal(1);
+        const recipesList = Datastar.signal([]);
+        const hasMorePages = Datastar.signal(true);
+    </script>
+    ```
+
+2. Update recipe list template
+
+    Open `templates/recipe_list_items.html` and add the infinite scroll trigger at the end:
+
+    ```html title="templates/recipe_list_items.html" ins={1-7}
+    {% if hasMorePages %}
+    <li data-on:intersect.once="@get('/recipes-sse?page=' + (currentPage.get() + 1))">
+        <span>Loading More…</span>
+    </li>
+    {% endif %}
+    ```
+
+3. Remove traditional pagination
+
+    Open `templates/recipe_list.html` and remove the pagination div:
+
+    ```html title="templates/recipe_list.html" del={1-11}
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('list_recipes', page=page-1) }}">Previous</a>
+        {% endif %}
+
+        <span class="current">Page {{ page }} of {{ total_pages }}</span>
+
+        {% if page < total_pages %}
+        <a href="{{ url_for('list_recipes', page=page+1) }}">Next</a>
+            {% endif %}
+    </div>
+    ```
+
+4. Add SSE endpoint for recipes
+
+    Open `app.py` and add a new SSE route for recipe pagination:
+
+    ```python title="app.py" ins={1-20}
+    @app.route('/recipes-sse')
+    def recipes_sse():
+        """Recipe list via Server-Sent Events"""
+        page = int(request.args.get('page', 1))
+        page_data = recipes.get_page(page, RECIPES_PER_PAGE)
+        
+        def generate():
+            data = {
+                'recipes': page_data['recipe_list'],
+                'currentPage': page,
+                'hasMorePages': page < page_data['total_pages']
+            }
+            yield f"data: {json.dumps(data)}\n\n"
+        
+        return Response(generate(), mimetype='text/event-stream')
+    ```
+
+5. Handle SSE recipe updates
+
+    Update the SSE handler in `layout.html`:
+
+    ```html title="templates/layout.html" ins={18-25}
+    <script>
+        // ... existing code ...
+        
+        // Handle SSE messages
+        Datastar.on('datastar-sse', (event) => {
+            if (event.data.recipeDetails) {
+                recipeDetails.set(event.data.recipeDetails);
+            }
+            if (event.data.searchResults) {
+                searchResults.set(event.data.searchResults);
+            }
+            if (event.data.recipes) {
+                recipesList.set([...recipesList.get(), ...event.data.recipes]);
+                currentPage.set(event.data.currentPage);
+                hasMorePages.set(event.data.hasMorePages);
+            }
+        });
+    </script>
+    ```
+
+6. Update recipe list display
+
+    Modify the recipe list to use the reactive recipesList signal:
+
+    ```html title="templates/home.html" ins={1-8}
+    <div id="recipe-list">
+        <ul class="recipe-list" data-text="recipesList.get().map(recipe => 
+            `<li><a href='#' data-on:click='selectedRecipe.set(${recipe.index}); @get(\"/recipe-sse/${recipe.index}\")'>${recipe.index} - ${recipe.name}</a></li>`
+        ).join('')">
+        </ul>
+    </div>
+    ```
+
+7. Initialize first page
+
+    Add initialization in the script to load the first page:
+
+    ```html title="templates/layout.html" ins={26-28}
+    <script>
+        // ... existing code ...
+        
+        // Load initial recipes
+        Datastar.run(() => {
+            @get('/recipes-sse?page=1');
+        });
+    </script>
+    ```
+
+</Steps>
+
+:::tip[Success!]
+You should now have infinite scrolling with Datastar!
+
+Scroll to the bottom and watch new recipes load automatically via Server-Sent Events.
+:::
+
+## How It Works
+
+1. **Initial load**: Signals load first page of recipes via SSE
+2. **User scrolls**: Intersection observer triggers SSE request for next page
+3. **Server pushes**: New recipes sent via SSE to client
+4. **Reactive update**: Signals update, UI re-renders automatically
+5. **Repeat**: Process continues until no more pages
+
+:::note[Datastar Advantages]
+- Server-driven pagination logic
+- Real-time updates via SSE
+- Reactive UI updates
+- Better separation of concerns
+:::
+
+You've now implemented all three features using Datastar! Compare this approach with the HTMX implementation in Part 2.

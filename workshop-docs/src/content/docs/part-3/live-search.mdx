@@ -1,0 +1,170 @@
+---
+title: Live Search Results with Datastar
+description: Dynamic search with reactive signals as you type
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 2
+---
+
+:::danger[Danger! Work in Progress! Here be Dragons!]
+2026-01-22 8:31:42AM MST - Datastar additions were made by Claude.ai and have **NOT** been tested! 
+:::
+
+import { Steps } from '@astrojs/starlight/components';
+
+Wouldn't it be cool if the search results were dynamic and reactive? Results appear as you type using Datastar's signals.
+
+You're going to make that happen now with Datastar's reactive approach!
+
+## How It Works
+
+<Steps>
+1. Create reactive search signal
+2. Bind input to signal with debouncing
+3. Use computed signals for search results
+4. Update UI reactively
+</Steps>
+
+## Step 1: Add reactive search signals
+
+Open `templates/layout.html` and add search-related signals to the script section:
+
+```html title="templates/layout.html" ins={4-8}
+<script>
+    // Initialize Datastar signals
+    const selectedRecipe = Datastar.signal(null);
+    const recipeDetails = Datastar.signal('<p>Select a recipe to view details</p>');
+    
+    // Search signals
+    const searchQuery = Datastar.signal('');
+    const searchResults = Datastar.signal([]);
+</script>
+```
+
+## Step 2: Create computed search signal
+
+Add a computed signal that reacts to search query changes:
+
+```html title="templates/layout.html" ins={9-15}
+<script>
+    // Initialize Datastar signals
+    const selectedRecipe = Datastar.signal(null);
+    const recipeDetails = Datastar.signal('<p>Select a recipe to view details</p>');
+    
+    // Search signals
+    const searchQuery = Datastar.signal('');
+    const searchResults = Datastar.signal([]);
+    
+    // Computed search results
+    const filteredRecipes = Datastar.computed(() => {
+        const query = searchQuery.get().toLowerCase();
+        if (!query) return [];
+        // This would be replaced with actual search logic
+        return recipes.filter(recipe => 
+            recipe.name.toLowerCase().includes(query) || 
+            recipe.description.toLowerCase().includes(query)
+        );
+    });
+</script>
+```
+
+## Step 3: Add reactive search input
+
+Open `templates/home.html` and replace the search box with Datastar-powered reactive input:
+
+```html title="templates/home.html" del={2-4} ins={5-9}
+<div class="search-box">
+    <form action="{{ url_for('search_recipes') }}" method="get">
+        <input type="search" name="q" placeholder="Search recipes...">
+    </form>
+    <input type="search"
+           placeholder="Search recipes..."
+           data-model="searchQuery"
+           data-on:input.debounce.300ms="searchResults.set(filteredRecipes.get())">
+</div>
+```
+
+### Understanding the Datastar Attributes
+
+| Attribute | Purpose |
+|-----------|---------|
+| `data-model` | Two-way binding to the searchQuery signal |
+| `data-on:input.debounce.300ms` | Updates search results with 300ms debounce |
+
+## Step 4: Add reactive results display
+
+Replace the recipe list section to reactively display search results:
+
+```html title="templates/home.html" ins={1-10}
+<div id="recipe-list" data-text="searchResults.get().length > 0 ? 
+    `<ul class='recipe-list'>${searchResults.get().map(recipe => 
+        `<li><a href='#' data-on:click='selectedRecipe.set(${recipe.index}); @get(\"/recipe-sse/${recipe.index}\")'>${recipe.index} - ${recipe.name}</a></li>`
+    ).join('')}</ul>` : 
+    searchQuery.get() ? '<p class=\"no-results\">No recipes found</p>' : ''">
+</div>
+```
+
+## Step 5: Update server for reactive search
+
+Since Datastar handles the search client-side with signals, you may want to add a server endpoint for more complex search logic.
+
+Add this route to `app.py`:
+
+```python title="app.py" ins={1-10}
+@app.route('/search-sse')
+def search_sse():
+    """Search via Server-Sent Events"""
+    query = request.args.get('q', '')
+    results = recipes.search(query)
+    
+    def generate():
+        data = {
+            'searchResults': results,
+            'query': query
+        }
+        yield f"data: {json.dumps(data)}\n\n"
+    
+    return Response(generate(), mimetype='text/event-stream')
+```
+
+## Step 6: Integrate server search (optional)
+
+For more advanced search, update the search input to use SSE:
+
+```html title="templates/home.html" ins={3-4} del={2}
+<input type="search"
+       placeholder="Search recipes..."
+       data-model="searchQuery"
+       data-on:input.debounce.300ms="@get('/search-sse?q=' + searchQuery.get())">
+```
+
+And handle the SSE response:
+
+```html title="templates/layout.html" ins={13-17}
+<script>
+    // ... existing code ...
+    
+    // Handle SSE messages
+    Datastar.on('datastar-sse', (event) => {
+        if (event.data.recipeDetails) {
+            recipeDetails.set(event.data.recipeDetails);
+        }
+        if (event.data.searchResults) {
+            searchResults.set(event.data.searchResults);
+        }
+    });
+</script>
+```
+
+:::tip[Success!]
+You should now have reactive search results with Datastar!
+
+Type in the search box and watch results appear automatically through reactive signals.
+:::
+
+:::note[Datastar Benefits]
+- Client-side reactivity with signals
+- No need for separate templates for fragments
+- Real-time updates via SSE when needed
+- Better performance for simple searches
+:::

@@ -45,6 +45,9 @@ export default defineConfig({
                     collapsed: true,
                     items: [
                         { label: 'Introduction', slug: 'part-3' },
+                        { label: 'Inline Recipe Details', slug: 'part-3/inline-details' },
+                        { label: 'Live Search Results', slug: 'part-3/live-search' },
+                        { label: 'Infinite Scroll', slug: 'part-3/infinite-scroll' },
                     ],
                 },
                 {

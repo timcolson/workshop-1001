@@ -1,13 +1,19 @@
 ---
-title: Datastar alternative 
+title: Upgrading with Datastar  
 description: Comparing HTMX with the Datastar hypermedia framework
+tableOfContents: false
 ---
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
 
-:::note[Work in Progress]
-If the workshop authors have the time, we'll build this section. If not, well, we only promised an introduction. 
+
+:::danger[Danger! Work in Progress! Here be Dragons!]
+2026-01-22 8:31:42AM MST - Datastar additions were made by Claude.ai and have **NOT** been tested! 
 :::
 
-The authors of Datastar agree that hypermedia is a great way to build dynamic apps. They take a different approach to how to make dynamic updates.
+
+Datastar is another hypermedia framework which combines concepts from HTMX and Alpine.js. Datastar uses Server-Sent Events (SSE) for real-time updates and provides built-in reactive signals for client-side state management.
+
+
 
 ## Feature Comparison
 
@@ -56,23 +62,49 @@ The authors of Datastar agree that hypermedia is a great way to build dynamic ap
 <div id="result"></div>
 ```
 
-## When to Choose Which?
+## When to choose?
 
-**Choose HTMX if:**
+**Choose HTMX when:**
 - You want minimal learning curve
 - Your use case is mostly click-to-load interactions
 - You prefer explicit, attribute-based behavior
+- [HTMX Documentation](https://htmx.org/)
 
-**Choose Datastar if:**
+**Choose Datastar when:**
 - You need real-time server-pushed updates
 - You want built-in reactive state management
 - You're building highly interactive applications
-
-:::caution[TODO]
-Return to the base app and re-apply the upgrades using Datastar.
-:::
-
-## Resources
-
-- [HTMX Documentation](https://htmx.org/)
 - [Datastar Documentation](https://data-star.dev/)
+
+
+## Datastar Upgrades
+
+<CardGrid>
+  <LinkCard
+    title="Inline Recipe Detail - Datastar"
+    description="Display details in a side panel with Datastar"
+    href="inline-details"
+  />
+  <LinkCard
+    title="Live Search Results - Datastar"
+    description="Dynamic search with Datastar signals"
+    href="live-search"
+  />
+  <LinkCard
+    title="Infinite Scroll - Datastar"
+    description="Load more recipes as user scrolls with SSE"
+    href="infinite-scroll"
+  />
+</CardGrid>
+
+## Getting Started
+
+Before implementing the features, you'll need to:
+
+1. Add the Datastar library to your templates
+2. Set up Server-Sent Events endpoints in your Flask app
+3. Use Datastar's reactive signals for state management
+
+:::note[Base App]
+Make sure you're starting from the base `app.py` (not `app-htmx.py`) for these Datastar implementations.
+:::

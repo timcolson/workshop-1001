@@ -1,0 +1,168 @@
+---
+title: Inline Recipe Details with Datastar
+description: Display recipe details without page reloads using Datastar
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+:::danger[Danger! Work in Progress! Here be Dragons!]
+2026-01-22 8:31:42AM MST - Datastar additions were made by Claude.ai and have **NOT** been tested! 
+:::
+
+When a user selects a recipe, they expect to see it without delay. Viewing another recipe should not require the back button.
+
+Displaying recipe details inline on the page, without a separate page load, would be a big improvement using Datastar's reactive approach.
+
+**How?** You'll use Datastar's signals to manage the selected recipe state and Server-Sent Events to fetch and display recipe details.
+
+:::note[Good news!]
+The CSS already defines styles for flex-columns, called `navigation-panel` & `details-panel`. You will use these two styles to create a two-column layout for navigation and recipe details.
+:::
+
+## Implementation overview
+
+<Steps>
+1. Add the Datastar library
+2. Add reactive signals for state management
+3. Add two-pane layout with signals
+4. Make recipe links dynamic with Datastar
+5. Set up SSE endpoint for recipe details
+</Steps>
+
+## Step 1: Load Datastar library
+
+The `layout` template is used by all pages, so it's a great place to load Datastar.
+
+Open `templates/layout.html` and add the script in the `<head>` section:
+
+```html title="templates/layout.html" ins={2-3}
+<head>
+    <!-- Add Datastar library -->
+    <script src="https://cdn.jsdelivr.net/npm/@sudodevnull/datastar@1.0.0/dist/datastar.js"></script>
+</head>
+```
+
+## Step 2: Add reactive signals
+
+Datastar uses signals for reactive state management. Add a signal for the selected recipe and details content.
+
+In the `<head>` section, after the Datastar script, add:
+
+```html title="templates/layout.html" ins={4-7}
+<head>
+    <!-- Add Datastar library -->
+    <script src="https://cdn.jsdelivr.net/npm/@sudodevnull/datastar@1.0.0/dist/datastar.js"></script>
+    <script>
+        // Initialize Datastar signals
+        const selectedRecipe = Datastar.signal(null);
+        const recipeDetails = Datastar.signal('<p>Select a recipe to view details</p>');
+    </script>
+</head>
+```
+
+## Step 3: Add a two-pane layout
+
+Replace the contents of `<body>` in `layout.html` with the following HTML that uses Datastar signals:
+
+```html title="templates/layout.html" ins={3-10} del={2}
+<body>
+{% block content %}{% endblock %}
+<div class="container">
+    <div id="recipe-navigation" class="navigation-panel">
+        {% block content %}{% endblock %}
+    </div>
+    <div id="recipe-details" class="details-panel" 
+         data-text="recipeDetails">
+    </div>
+</div>
+</body>
+```
+
+The `data-text` attribute binds the div's content to the `recipeDetails` signal.
+
+## Step 4: Make Links Dynamic
+
+Convert the recipe link to use Datastar's event handling and SSE.
+
+Open `templates/recipe_list_items.html` and find the recipe detail link:
+
+```html title="Before - standard link"
+<a href="{{ url_for('recipe_detail', recipe_id=recipe.index) }}">{{ recipe.index }} - {{ recipe.name }}</a>
+```
+
+Replace with Datastar-powered link:
+
+```html title="After - Datastar enhanced" ins={2-4} del={1}
+<a href="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
+<a href="#"
+   data-on:click="selectedRecipe.set({{ recipe.index }}); @get('/recipe-sse/{{ recipe.index }}')">
+    {{ recipe.index }} - {{ recipe.name }}
+</a>
+```
+
+This sets the selected recipe signal and triggers an SSE request to fetch details.
+
+## Step 5: Set up SSE endpoint
+
+Update your server to provide Server-Sent Events for recipe details.
+
+Open `app.py` and add a new route for SSE:
+
+```python title="app.py" ins={1-15}
+from flask import Response
+import json
+
+# ... existing code ...
+
+@app.route('/recipe-sse/<int:recipe_id>')
+def recipe_detail_sse(recipe_id):
+    """Recipe detail via Server-Sent Events"""
+    recipe = recipes.get_by_id(recipe_id)
+    if not recipe:
+        abort(404)
+    
+    def generate():
+        data = {
+            'recipeDetails': render_template('recipe_detail_fragment.html', recipe=recipe)
+        }
+        yield f"data: {json.dumps(data)}\n\n"
+    
+    return Response(generate(), mimetype='text/event-stream')
+
+# ... existing code ...
+```
+
+## Step 6: Handle SSE responses
+
+Update the layout to handle incoming SSE messages that update the recipe details.
+
+In the `<script>` section in `layout.html`, add:
+
+```html title="templates/layout.html" ins={8-12}
+<script>
+    // Initialize Datastar signals
+    const selectedRecipe = Datastar.signal(null);
+    const recipeDetails = Datastar.signal('<p>Select a recipe to view details</p>');
+    
+    // Handle SSE messages
+    Datastar.on('datastar-sse', (event) => {
+        if (event.data.recipeDetails) {
+            recipeDetails.set(event.data.recipeDetails);
+        }
+    });
+</script>
+```
+
+:::tip[Success!]
+You should now have dynamic loading of recipe details with Datastar!
+
+The recipe details appear in the right panel when you click a recipe link, powered by reactive signals and Server-Sent Events.
+:::
+
+:::note[Datastar Advantages]
+- Server-driven updates via SSE
+- Reactive state management with signals
+- More scalable for real-time applications
+:::
+
+Next up: Upgrade your app with Live Search Results using Datastar...
