@@ -9,21 +9,13 @@
         </a>
     </li>
     {% endfor %}
-</ul>
-
-<!-- Tip: Remember to also update app.py to return only the recipe_list_fragment -->
-<div class="pagination">
-    {% if page > 1 %}
-    <a href="#"
-       hx-get="{{ url_for('list_recipes', page=page-1) }}"
-       hx-target="#recipe-list">Previous</a>
-    {% endif %}
-
-    <span class="current">Page {{ page }} of {{ total_pages }}</span>
 
     {% if page < total_pages %}
-    <a href="#"
-       hx-get="{{ url_for('list_recipes', page=page+1) }}"
-       hx-target="#recipe-list">Next</a>
+    <li>
+        <span hx-target="closest li"
+        hx-trigger="intersect once"
+        hx-swap="outerHTML"
+        hx-get="{{ url_for('list_recipes', page=page+1) }}">Loading More...</span>
+    </li>
     {% endif %}
-</div>
+</ul>

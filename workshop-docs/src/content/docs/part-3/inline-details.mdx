@@ -62,7 +62,7 @@ Replace the contents of `<body>` in `_layout.html` with HTML that creates a two-
     <div id="recipe-navigation" class="navigation-panel">
         {% block content %}{% endblock %}
     </div>
-    <div id="recipe-details" class="details-panel">
+    <div id="recipe-details" class="details-panel empty">
         <p>Select a recipe to view details</p>
     </div>
 </div>
@@ -83,14 +83,15 @@ Open `templates/_recipe_list_items.html` and find the recipe detail link:
 
 Replace with Datastar-powered link:
 
-```html title="After - Datastar enhanced" ins={2-4} del={1}
+```html title="After - Datastar enhanced" ins={2-5} del={1}
 <a href="{{ url_for('recipe_detail', recipe_id=recipe.index) }}">{{ recipe.index }} - {{ recipe.name }}</a>
-<a href="#" data-on:click="@get('/recipe/{{ recipe.index }}')">
+<a href="#" data-on:click="document.getElementById('recipe-details').classList.remove('empty');
+    @get('/recipe/{{ recipe.index }}')">
     {{ recipe.index }} - {{ recipe.name }}
 </a>
 ```
 
-When clicked, `@get()` sends a request to the existing recipe endpoint. Datastar automatically adds a `datastar` query parameter, which the server uses to detect SSE requests.
+When clicked, the inline JavaScript removes the `empty` CSS class from the details panel (fixing the centered placeholder styling), then `@get()` sends a request to the existing recipe endpoint. Datastar automatically adds a `datastar` query parameter, which the server uses to detect SSE requests.
 
 ## Step 5: Create a recipe detail fragment
 

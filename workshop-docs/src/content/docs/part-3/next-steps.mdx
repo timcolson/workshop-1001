@@ -10,7 +10,7 @@ You've successfully upgraded the Recipe Browser with Datastar! Here's the patter
 ### The Datastar Upgrade Pattern
 
 1. **Add Datastar attributes to trigger elements**
-   - `data-on:click` / `data-on:input` / `data-on:intersect` - Event handlers
+   - `data-on:click` / `data-on:input` / `data-on-intersect` - Event handlers
    - `@get('/endpoint')` - SSE request action
    - Modifiers like `__debounce.300ms` or `__once`
 
@@ -29,7 +29,7 @@ You've successfully upgraded the Recipe Browser with Datastar! Here's the patter
 |---------|---------|--------------|
 | Inline Details | `data-on:click` | `#recipe-details` |
 | Live Search | `data-on:input__debounce.300ms` | `#recipe-list` |
-| Infinite Scroll | `data-on:intersect__once` | `#load-more-trigger` |
+| Infinite Scroll | `data-on-intersect__once` | `#load-more-trigger` |
 
 ### Key Differences from HTMX
 

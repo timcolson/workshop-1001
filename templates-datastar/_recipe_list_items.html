@@ -1,7 +1,7 @@
 {% for recipe in recipe_list %}
 <li>
     <img src="{{ recipe.get_thumbnail_image_url() }}" alt="{{ recipe.name }}" width="100" height="100">
-    <a href="#" data-on:click="@get('/recipe/{{ recipe.index }}')">
+    <a href="#" data-on:click="document.getElementById('recipe-details').classList.remove('empty'); @get('/recipe/{{ recipe.index }}')">
         {{ recipe.index }} - {{ recipe.name }}
     </a>
 </li>
@@ -9,7 +9,7 @@
 
 {% if page < total_pages %}
 <li id="load-more-trigger"
-    data-on:intersect__once="@get('/recipes?page={{ page + 1 }}')">
+    data-on-intersect__once="@get('/recipes?page={{ page + 1 }}')">
     <span>Loading More...</span>
 </li>
 {% endif %}

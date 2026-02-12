@@ -8,7 +8,7 @@ from flask import Flask, redirect, render_template, abort, request
 import logging
 from models import RecipeRepository
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates-htmx')
 
 RECIPES_PER_PAGE = 10
 recipes = RecipeRepository('data/recipes.json')
@@ -45,7 +45,12 @@ def recipe_detail(recipe_id):
 @app.route('/search')
 def search_recipes():
     """Search recipes by query text"""
-    query = request.args.get('q', '')
+    query = request.args.get('q', '').strip()
+
+    if not query:
+        page_data = recipes.get_page(1, RECIPES_PER_PAGE)
+        return render_template('_recipe_list_fragment.html', **page_data)
+
     results = recipes.search(query)
     return render_template('_search_results_fragment.html', recipes=results, query=query)
 

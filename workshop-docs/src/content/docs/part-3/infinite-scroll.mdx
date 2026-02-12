@@ -31,7 +31,7 @@ You'll use Datastar attributes:
 
 | Attribute | Purpose |
 |-----------|---------|
-| `data-on:intersect__once` | Fires once when element intersects viewport |
+| `data-on-intersect__once` | Fires once when element intersects viewport |
 | `@get` | Sends SSE request to server |
 
 ## To add infinite scroll with Datastar
@@ -45,7 +45,7 @@ You'll use Datastar attributes:
     ```html title="templates/_recipe_list_items.html" ins={1-6}
     {% if page < total_pages %}
     <li id="load-more-trigger"
-        data-on:intersect__once="@get('/recipes?page={{ page + 1 }}')">
+        data-on-intersect__once="@get('/recipes?page={{ page + 1 }}')">
         <span>Loading More...</span>
     </li>
     {% endif %}

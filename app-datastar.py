@@ -9,7 +9,7 @@ import logging
 from models import RecipeRepository
 from datastar_py import ServerSentEventGenerator as SSE
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates-datastar')
 
 RECIPES_PER_PAGE = 10
 SSE_MIMETYPE = 'text/event-stream'
@@ -33,10 +33,6 @@ def list_recipes():
         def generate():
             yield SSE.patch_elements(html, selector='#load-more-trigger', mode='outer')
         return Response(generate(), mimetype=SSE_MIMETYPE)
-
-    # Fragment request (for HTMX infinite scroll)
-    if request.args.get('fragment'):
-        return render_template('_recipe_list_items.html', **page_data)
 
     # Regular full page request
     return render_template('home.html', **page_data)
