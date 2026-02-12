@@ -51,11 +51,11 @@ You'll re-use the existing paging server logic, combined with HTMX attributes:
     {% endif %}
     ```
 
-2. Remove paging from recipe_list template 
+2. Remove paging from home template
 
-    Open `templates/recipe_list.html` and remove the entire pagination div:
+    Open `templates/home.html` and remove the pagination div:
 
-    ```html title="templates/recipe_list.html" del={1-11}
+    ```html title="templates/home.html" del={1-11}
     <div class="pagination">
         {% if page > 1 %}
         <a href="{{ url_for('list_recipes', page=page-1) }}">Previous</a>

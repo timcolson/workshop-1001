@@ -77,9 +77,9 @@ You'll use Datastar attributes:
 
 3. Remove traditional pagination
 
-    Open `templates/recipe_list.html` and remove the pagination div:
+    Open `templates/home.html` and remove the pagination div:
 
-    ```html title="templates/recipe_list.html" del={1-11}
+    ```html title="templates/home.html" del={1-11}
     <div class="pagination">
         {% if page > 1 %}
         <a href="{{ url_for('list_recipes', page=page-1) }}">Previous</a>

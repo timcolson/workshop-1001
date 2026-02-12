@@ -9,6 +9,8 @@
 Browse  <a href="{{ url_for('home') }}">all recipes</a>.
 <hr/>
 
-{% include "recipe_list.html" %}
+<ul class="recipe-list">
+{% include "recipe_list_items.html" %}
+</ul>
 
 {% endblock %}
