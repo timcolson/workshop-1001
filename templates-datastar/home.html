@@ -1,0 +1,23 @@
+{% extends "_layout.html" %}
+
+{% block title %}Recipe Browser{% endblock %}
+
+{% block content %}
+<h1>Recipe Browser</h1>
+<p>Browse  <a href="{{ url_for('home') }}">all {{ total_recipes }} recipes</a>.</p>
+
+<div class="search-box">
+    <input type="search"
+           name="q"
+           placeholder="Search recipes..."
+           data-on:input__debounce.300ms="@get('/search?q=' + evt.target.value)">
+</div>
+
+<div id="recipe-list">
+    <h3>Recipe List</h3>
+    <ul class="recipe-list">
+    {% include "_recipe_list_items.html" %}
+    </ul>
+</div>
+
+{% endblock %}

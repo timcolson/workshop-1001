@@ -1,8 +1,3 @@
-{% extends "_layout.html" %}
-
-{% block title %}{{ recipe.name }} - Recipe Browser{% endblock %}
-
-{% block content %}
 
 <h1>Recipe Details: {{ recipe.name }}</h1>
 <img src="{{ recipe.get_thumbnail_image_url() }}" alt="{{ recipe.name }}" width="200" height="200">
@@ -33,11 +28,3 @@
 <div class="source">
     <p><a href="{{ recipe.url }}" target="_blank">View original recipe source</a></p>
 </div>
-
-<hr/>
-
-<div class="back-link">
-    <a href="{{ url_for('home') }}">Back to Recipe List</a>
-</div>
-
-{% endblock %}

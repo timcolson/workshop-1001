@@ -1,0 +1,15 @@
+{% extends "_layout.html" %}
+
+{% block title %}{{ recipe.name }} - Recipe Browser{% endblock %}
+
+{% block content %}
+
+{% include "_recipe_detail_fragment.html" %}
+
+<hr/>
+
+<div class="back-link">
+    <a href="{{ url_for('home') }}">Back to Recipe List</a>
+</div>
+
+{% endblock %}

@@ -19,11 +19,11 @@ The recipe app is built with [Flask](https://flask.palletsprojects.com/en/stable
 - **app.py**   - Main entry point with routes
 - models.py   - Recipe data model and repository
 - templates/        HTML templates using Jinja2  
-    - layout.html   Common layout code used by full pages
+    - _layout.html   Common layout code used by full pages
     - home.html  
     - recipe.html  
     - search.html
-    - recipe_list_items Fragment with recipe items
+    - _recipe_list_items Fragment with recipe items
 </FileTree>
 In addition, we've provided end-state files. Review only if you get stuck. 
 - *`app-htmx.py` -- End-state entry point for reference.* 
@@ -41,7 +41,7 @@ The flexibility for routes to send back varying amounts of HTML will be importan
 
 - **Standalone** or _full page_ templates 
     - Examples: `home.html`, `recipe.html`, `search.html`
-    - Full pages also extend a common `layout.html` template
+    - Full pages also extend a common `_layout.html` template
 - **Layout** includes page structure, HTML heading, and common elements, such as CSS, JavaScript
 - Templates can include small reusable page fragments.
 

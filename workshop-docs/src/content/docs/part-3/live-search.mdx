@@ -64,7 +64,7 @@ def search_recipes():
     results = recipes.search(query)
 
     # Render the fragment template
-    html = render_template('search_results_fragment.html',
+    html = render_template('_search_results_fragment.html',
         recipe_list=results, query=query)
 
     # Check if this is a Datastar request (has datastar query param)
@@ -88,9 +88,9 @@ The `render_template()` call must happen **before** the generator function runs.
 
 ## Step 3: Create Search Results Fragment
 
-Create a new template file `templates/search_results_fragment.html` for the search results:
+Create a new template file `templates/_search_results_fragment.html` for the search results:
 
-```html title="templates/search_results_fragment.html"
+```html title="templates/_search_results_fragment.html"
 {% if query %}
 <p class="search-info">
     Found {{ recipe_list|length }} result{% if recipe_list|length != 1 %}s{% endif %}
@@ -100,7 +100,7 @@ Create a new template file `templates/search_results_fragment.html` for the sear
 
 {% if recipe_list %}
 <ul class="recipe-list">
-    {% include "recipe_list_items.html" %}
+    {% include "_recipe_list_items.html" %}
 </ul>
 {% elif query %}
 <p class="no-results">No recipes found matching "{{ query }}"</p>

@@ -1,0 +1,18 @@
+{% if query %}
+<p class="search-info">Found {{ recipe_list|length }} result{% if recipe_list|length != 1 %}s{% endif %} for "{{ query }}"</p>
+{% endif %}
+
+{% if recipe_list %}
+<ul class="recipe-list">
+    {% for recipe in recipe_list %}
+    <li>
+        <img src="{{ recipe.get_thumbnail_image_url() }}" alt="{{ recipe.name }}" width="50" height="50" />
+        <a href="#" data-on:click="@get('/recipe/{{ recipe.index }}')">
+            {{ recipe.name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% elif query %}
+<p class="no-results">No recipes found matching "{{ query }}"</p>
+{% endif %}

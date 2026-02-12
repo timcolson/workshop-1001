@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "_layout.html" %}
 
 {% block title %}Recipe Search Results{% endblock %}
 
@@ -10,7 +10,7 @@ Browse  <a href="{{ url_for('home') }}">all recipes</a>.
 <hr/>
 
 <ul class="recipe-list">
-{% include "recipe_list_items.html" %}
+{% include "_recipe_list_items.html" %}
 </ul>
 
 {% endblock %}

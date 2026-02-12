@@ -62,7 +62,7 @@ Open `app.py` and modify the search route to return only the results:
 ```python title="app.py" del={2} ins={3} showLineNumbers=true
 def search_recipes():
     return render_template('search.html',
-    return render_template('search_results_fragment.html',
+    return render_template('_search_results_fragment.html',
         recipe_list=results, query=query,
         page=1, total_pages=1, total_recipes=len(results))
 ```
@@ -71,9 +71,9 @@ def search_recipes():
 
 ## Step 3: Create results fragment
 
-For the search results only, create a new template file: `templates/search_results_fragment.html`
+For the search results only, create a new template file: `templates/_search_results_fragment.html`
 
-```html showLineNumbers title="templates/search_results_fragment.html" 
+```html showLineNumbers title="templates/_search_results_fragment.html"
 {% if query %}
 <p class="search-info">
     Found {{ recipe_list|length }} result{% if recipe_list|length != 1 %}s{% endif %}
@@ -83,7 +83,7 @@ For the search results only, create a new template file: `templates/search_resul
 
 {% if recipe_list %}
 <ul class="recipe-list">
-    {% include "recipe_list_items.html" %}
+    {% include "_recipe_list_items.html" %}
 </ul>
 {% elif query %}
 <p class="no-results">No recipes found matching "{{ query }}"</p>

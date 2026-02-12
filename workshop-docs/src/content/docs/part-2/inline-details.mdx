@@ -18,10 +18,12 @@ The CSS already defines styles for flex-columns, called `navigation-panel` & `de
 ## Implementation overview
 
 <Steps>
-1. Add the HTMX library 
+1. Add the HTMX library
 2. Add two-pane layout
 3. Make recipe links dynamic
-4. Return recipe details HTML fragment
+4. Create a recipe detail fragment
+5. Return the fragment for HTMX requests
+6. Fix formatting
 </Steps>
 
 
@@ -29,9 +31,9 @@ The CSS already defines styles for flex-columns, called `navigation-panel` & `de
 
 The `layout` temlate is used by all pages, so it's a great place to load HTMX.
 
-Open `templates/layout.html` and add the script in the `<head>` section:
+Open `templates/_layout.html` and add the script in the `<head>` section:
 
-```html title="templates/layout.html" ins={2-3}
+```html title="templates/_layout.html" ins={2-3}
 <head>
     <!-- Add HTMX library -->
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
@@ -40,9 +42,9 @@ Open `templates/layout.html` and add the script in the `<head>` section:
 
 ## Step 2: Add a two-pane layout
 
-Replace the contents of `<body>` in `layout.html` with the following HTML:
+Replace the contents of `<body>` in `_layout.html` with the following HTML:
 
-```html title="templates/layout.html" ins={3-10} del={2}
+```html title="templates/_layout.html" ins={3-10} del={2}
 <body>
 {% block content %}{% endblock %}
 <div class="container">
@@ -64,7 +66,7 @@ The previous two divs create a two-column layout:
 
 Now, convert the recipe link that goes to recipe details for a recipe ID, to a dynamic call using hx- attributes:
 
-Open `templates/recipe_list_items.html` and find the recipe detail link:
+Open `templates/_recipe_list_items.html` and find the recipe detail link:
 
 ```html title="Before - standard link"
 <a href="{{ url_for('recipe_detail', recipe_id=recipe.index) }}">{{ recipe.index }} - {{ recipe.name }}</a>
@@ -89,27 +91,84 @@ You should already see **dynamic loading** of recipe details! The result isn't p
 
 **How is this working?** The new recipe link invokes HTMX to handle the request. HTMX calls the server and puts the resulting HTML into the `target` div.
 
-**One problem:** The server is still sending an **entire page**, wrapped in `layout.html`. So you're getting extra HTML that you don't need. 
+**One problem:** The server is still sending an **entire page**, wrapped in `_layout.html`. So you're getting extra HTML that you don't need. 
 
 In the next step, you'll edit the server route to only send the HTML you need.
 
-## Step 4: Return a fragment
+## Step 4: Create a recipe detail fragment
+
+To send only the recipe details (without the full page layout), you need to extract the detail HTML into its own template fragment.
+
+**Why a fragment?** Currently, `recipe.html` is a full page — it extends `_layout.html` and includes the `<head>`, navigation, etc. When HTMX requests recipe details, you only want the recipe content itself, not the entire page wrapper. By extracting the details into a fragment, you can:
+- Return **just the fragment** for HTMX requests (fast, partial update)
+- Include the fragment in `recipe.html` for regular full-page requests (no duplication)
+
+Create a new file `templates/_recipe_detail_fragment.html` with the recipe detail content:
+
+```html title="templates/_recipe_detail_fragment.html"
+<h1>Recipe Details: {{ recipe.name }}</h1>
+<img src="{{ recipe.get_thumbnail_image_url() }}" alt="{{ recipe.name }}" width="200" height="200">
+
+<div class="recipe-meta">
+    <p><strong>Author:</strong> {{ recipe.author }}</p>
+    <p>{{ recipe.description }}</p>
+</div>
+
+<div class="section">
+    <h2>Ingredients</h2>
+    <ul class="ingredients">
+        {% for ingredient in recipe.ingredients %}
+        <li>{{ ingredient }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="section">
+    <h2>Method</h2>
+    <ol class="method">
+        {% for step in recipe.method %}
+        <li>{{ step }}</li>
+        {% endfor %}
+    </ol>
+</div>
+
+<div class="source">
+    <p><a href="{{ recipe.url }}" target="_blank">View original recipe source</a></p>
+</div>
+```
+
+Then update `templates/recipe.html` to include the fragment instead of duplicating the content:
+
+```html title="templates/recipe.html" ins={3} del={4}
+{% block content %}
+
+{% include "_recipe_detail_fragment.html" %}
+(previous recipe detail HTML — now replaced by the include)
+
+<hr/>
+<div class="back-link">
+    <a href="{{ url_for('home') }}">Back to Recipe List</a>
+</div>
+{% endblock %}
+```
+
+## Step 5: Return the fragment for HTMX requests
 
 Update your server to only return partial HTML for HTMX requests.
 
-For requests from HTMX, the **HX-Request** header is present. With that info, your server action can choose a different template — in this case, only the HTML produced by `recipe_detail_fragment`.
+For requests from HTMX, the **HX-Request** header is present. With that info, your server action can choose a different template — in this case, only the HTML produced by `_recipe_detail_fragment`.
 
 Open `app.py` and add the following header check **before** the return statement in `recipe_detail()`:
 
 ```python title="app.py" ins={2-3}
 def recipe_detail(recipe_id):
     if request.headers.get('HX-Request'):
-        return render_template('recipe_detail_fragment.html', recipe=recipe)
+        return render_template('_recipe_detail_fragment.html', recipe=recipe)
     return render_template('recipe.html', recipe=recipe)
 ```
 Reload to check it out. You might need to Stop and restart the server. 
 
-## Step 5: Fix formatting
+## Step 6: Fix formatting
 
 One problem you might notice. The CSS applies the same **centered** style when the details panel were `empty`. When there are recipe details, the centered style doesn't look good. 
 
@@ -117,10 +176,10 @@ You need to remove the `empty` class after loading the recipe content.
 
 Fortunatley, you can use HTMX's `hx-on::after-request` attribute to run inline JavaScript to remove the style after the content has loaded.
 
-1. Open `templates/recipe_list_items.html`.
+1. Open `templates/_recipe_list_items.html`.
 2. Add the `hx-on` attribute to the detail link:
 
-    ```html title="templates/recipe_list_items.html" ins={4-5}
+    ```html title="templates/_recipe_list_items.html" ins={4-5}
     <a href="#"
     hx-get="{{ url_for('recipe_detail', recipe_id=recipe.index) }}"
     hx-target="#recipe-details"

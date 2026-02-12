@@ -22,7 +22,8 @@ The CSS already defines styles for flex-columns, called `navigation-panel` & `de
 2. Add the Datastar library
 3. Add two-pane layout
 4. Make recipe links dynamic with Datastar
-5. Set up SSE endpoint for recipe details
+5. Create a recipe detail fragment
+6. Modify recipe endpoint for SSE
 </Steps>
 
 ## Step 1: Install datastar-py
@@ -37,9 +38,9 @@ pip install datastar-py
 
 The `layout` template is used by all pages, so it's a great place to load Datastar.
 
-Open `templates/layout.html` and add the script in the `<head>` section:
+Open `templates/_layout.html` and add the script in the `<head>` section:
 
-```html title="templates/layout.html" ins={2-3}
+```html title="templates/_layout.html" ins={2-3}
 <head>
     <!-- Add Datastar library -->
     <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.7/bundles/datastar.js"></script>
@@ -52,9 +53,9 @@ The `type="module"` attribute is required for Datastar to load correctly.
 
 ## Step 3: Add a two-pane layout
 
-Replace the contents of `<body>` in `layout.html` with HTML that creates a two-column layout:
+Replace the contents of `<body>` in `_layout.html` with HTML that creates a two-column layout:
 
-```html title="templates/layout.html" ins={3-10} del={2}
+```html title="templates/_layout.html" ins={3-10} del={2}
 <body>
 {% block content %}{% endblock %}
 <div class="container">
@@ -74,7 +75,7 @@ The `#recipe-details` div will be updated by Datastar when the SSE response arri
 
 Convert the recipe link to use Datastar's `@get()` action.
 
-Open `templates/recipe_list_items.html` and find the recipe detail link:
+Open `templates/_recipe_list_items.html` and find the recipe detail link:
 
 ```html title="Before - standard link"
 <a href="{{ url_for('recipe_detail', recipe_id=recipe.index) }}">{{ recipe.index }} - {{ recipe.name }}</a>
@@ -91,7 +92,64 @@ Replace with Datastar-powered link:
 
 When clicked, `@get()` sends a request to the existing recipe endpoint. Datastar automatically adds a `datastar` query parameter, which the server uses to detect SSE requests.
 
-## Step 5: Modify Recipe Endpoint for SSE
+## Step 5: Create a recipe detail fragment
+
+To send only the recipe details via SSE (without the full page layout), extract the detail HTML into its own template fragment.
+
+**Why a fragment?** Currently, `recipe.html` is a full page — it extends `_layout.html` and includes the `<head>`, navigation, etc. When Datastar requests recipe details, you only want the recipe content itself. By extracting the details into a fragment, you can:
+- Return **just the fragment** via SSE for Datastar requests (fast, partial update)
+- Include the fragment in `recipe.html` for regular full-page requests (no duplication)
+
+Create a new file `templates/_recipe_detail_fragment.html` with the recipe detail content:
+
+```html title="templates/_recipe_detail_fragment.html"
+<h1>Recipe Details: {{ recipe.name }}</h1>
+<img src="{{ recipe.get_thumbnail_image_url() }}" alt="{{ recipe.name }}" width="200" height="200">
+
+<div class="recipe-meta">
+    <p><strong>Author:</strong> {{ recipe.author }}</p>
+    <p>{{ recipe.description }}</p>
+</div>
+
+<div class="section">
+    <h2>Ingredients</h2>
+    <ul class="ingredients">
+        {% for ingredient in recipe.ingredients %}
+        <li>{{ ingredient }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="section">
+    <h2>Method</h2>
+    <ol class="method">
+        {% for step in recipe.method %}
+        <li>{{ step }}</li>
+        {% endfor %}
+    </ol>
+</div>
+
+<div class="source">
+    <p><a href="{{ recipe.url }}" target="_blank">View original recipe source</a></p>
+</div>
+```
+
+Then update `templates/recipe.html` to include the fragment instead of duplicating the content:
+
+```html title="templates/recipe.html" ins={3} del={4}
+{% block content %}
+
+{% include "_recipe_detail_fragment.html" %}
+(previous recipe detail HTML — now replaced by the include)
+
+<hr/>
+<div class="back-link">
+    <a href="{{ url_for('home') }}">Back to Recipe List</a>
+</div>
+{% endblock %}
+```
+
+## Step 6: Modify Recipe Endpoint for SSE
 
 Update the existing `/recipe/<id>` route to handle both regular page requests and Datastar SSE requests.
 
@@ -115,7 +173,7 @@ def recipe_detail(recipe_id):
 
     # Check if this is a Datastar request (has datastar query param)
     if 'datastar' in request.args:
-        html = render_template('recipe_detail_fragment.html', recipe=recipe)
+        html = render_template('_recipe_detail_fragment.html', recipe=recipe)
         def generate():
             yield SSE.patch_elements(html, selector='#recipe-details', mode='inner')
         return Response(generate(), mimetype='text/event-stream')

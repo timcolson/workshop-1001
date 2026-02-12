@@ -26,7 +26,7 @@ def list_recipes():
     page_data = recipes.get_page(page, RECIPES_PER_PAGE)
 
     if request.headers.get('HX-Request'):
-        return render_template('recipe_list_fragment.html', **page_data)
+        return render_template('_recipe_list_fragment.html', **page_data)
     return render_template('home.html', **page_data)
 
 
@@ -38,7 +38,7 @@ def recipe_detail(recipe_id):
         abort(404)
 
     if request.headers.get('HX-Request'):
-        return render_template('recipe_detail_fragment.html', recipe=recipe)
+        return render_template('_recipe_detail_fragment.html', recipe=recipe)
     return render_template('recipe.html', recipe=recipe)
 
 
@@ -47,7 +47,7 @@ def search_recipes():
     """Search recipes by query text"""
     query = request.args.get('q', '')
     results = recipes.search(query)
-    return render_template('search_results_fragment.html', recipes=results, query=query)
+    return render_template('_search_results_fragment.html', recipes=results, query=query)
 
 
 class Status304Filter(logging.Filter):

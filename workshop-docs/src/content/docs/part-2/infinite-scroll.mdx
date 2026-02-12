@@ -38,9 +38,9 @@ You'll re-use the existing paging server logic, combined with HTMX attributes:
 <Steps>
 1. Update the recipe_list_items template
 
-    Open `templates/recipe_list_items.html` and add the following at the end
+    Open `templates/_recipe_list_items.html` and add the following at the end
 
-    ```html title="templates/recipe_list_items.html" ins={1-8}
+    ```html title="templates/_recipe_list_items.html" ins={1-8}
     {% if page < total_pages %}
     <li>
         <span hx-target="closest li"

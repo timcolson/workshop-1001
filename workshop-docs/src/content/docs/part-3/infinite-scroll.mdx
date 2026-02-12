@@ -40,9 +40,9 @@ You'll use Datastar attributes:
 
 1. Update the recipe_list_items template
 
-    Open `templates/recipe_list_items.html` and add the infinite scroll trigger at the end:
+    Open `templates/_recipe_list_items.html` and add the infinite scroll trigger at the end:
 
-    ```html title="templates/recipe_list_items.html" ins={1-6}
+    ```html title="templates/_recipe_list_items.html" ins={1-6}
     {% if page < total_pages %}
     <li id="load-more-trigger"
         data-on:intersect__once="@get('/recipes?page={{ page + 1 }}')">
@@ -64,7 +64,7 @@ You'll use Datastar attributes:
 
         # Datastar SSE request (infinite scroll)
         if 'datastar' in request.args:
-            html = render_template('recipe_list_items.html', **page_data)
+            html = render_template('_recipe_list_items.html', **page_data)
             def generate():
                 yield SSE.patch_elements(html, selector='#load-more-trigger', mode='outer')
             return Response(generate(), mimetype=SSE_MIMETYPE)
