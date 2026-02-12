@@ -28,15 +28,6 @@ def list_recipes():
     return render_template('home.html', **page_data)
 
 
-@app.route('/recipes_li')
-def recipes_li():
-    """Recipe list endpoint for infinite scroll"""
-    page = int(request.args.get('page', 1))
-    page_data = recipes.get_page(page, RECIPES_PER_PAGE)
-    rendered_template = render_template('recipe_list_items.html', **page_data)
-    print(f"{rendered_template=}")
-    return rendered_template
-
 @app.route('/recipe/<int:recipe_id>')
 def recipe_detail(recipe_id):
     """Recipe detail page"""
