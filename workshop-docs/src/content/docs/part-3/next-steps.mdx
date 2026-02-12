@@ -1,0 +1,57 @@
+---
+title: Next Steps
+description: Summary and reset for trying HTMX
+---
+
+## What You Learned
+
+You've successfully upgraded the Recipe Browser with Datastar! Here's the pattern you followed for each feature:
+
+### The Datastar Upgrade Pattern
+
+1. **Add Datastar attributes to trigger elements**
+   - `data-on:click` / `data-on:input` / `data-on:intersect` - Event handlers
+   - `@get('/endpoint')` - SSE request action
+   - Modifiers like `__debounce.300ms` or `__once`
+
+2. **Modify server routes for SSE responses**
+   - Detect Datastar requests via `'datastar' in request.args`
+   - Use `SSE.patch_elements()` to generate SSE events
+   - Return `Response(generate(), mimetype=SSE_MIMETYPE)`
+
+3. **Create fragment templates**
+   - Small, focused templates for partial updates
+   - Server renders HTML, Datastar patches the DOM
+
+### Features Implemented
+
+| Feature | Trigger | SSE Selector |
+|---------|---------|--------------|
+| Inline Details | `data-on:click` | `#recipe-details` |
+| Live Search | `data-on:input__debounce.300ms` | `#recipe-list` |
+| Infinite Scroll | `data-on:intersect__once` | `#load-more-trigger` |
+
+### Key Differences from HTMX
+
+| Aspect | HTMX | Datastar |
+|--------|------|----------|
+| Protocol | HTTP request/response | Server-Sent Events (SSE) |
+| Response format | Raw HTML | SSE with `patch_elements` event |
+| Server library | None needed | `datastar-py` |
+| DOM update | Direct swap | Morph/patch via selector |
+
+## Reset for Part 2
+
+Want to try the HTMX approach? Reset your code to the baseline state first:
+
+```bash
+git checkout -- templates/ app.py
+```
+
+This reverts:
+- Template changes (Datastar attributes, fragments)
+- Server route modifications
+
+:::tip[Ready for HTMX?]
+After resetting, head to [Part II: HTMX](/workshop-1001/part-2/) to implement the same features using a simpler request/response model.
+:::

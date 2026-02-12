@@ -1,0 +1,48 @@
+---
+title: Next Steps
+description: Summary and reset for trying Datastar
+---
+
+## What You Learned
+
+You've successfully upgraded the Recipe Browser with HTMX! Here's the pattern you followed for each feature:
+
+### The HTMX Upgrade Pattern
+
+1. **Add HTMX attributes to trigger elements**
+   - `hx-get` - URL to fetch content
+   - `hx-target` - Element to update with response
+   - `hx-trigger` - Event that triggers the request
+   - `hx-swap` - How to insert the new content
+
+2. **Modify server routes to return HTML fragments**
+   - Check for fragment requests (or always return fragments for partial endpoints)
+   - Render just the needed HTML, not full pages
+
+3. **Create fragment templates**
+   - Small, focused templates for partial updates
+   - Reusable across different features
+
+### Features Implemented
+
+| Feature | Trigger | Target |
+|---------|---------|--------|
+| Inline Details | Click recipe link | `#recipe-details` panel |
+| Live Search | Input with debounce | `#recipe-list` |
+| Infinite Scroll | Scroll intersection | Replace trigger `<li>` |
+
+## Reset for Part 3
+
+Want to try the Datastar approach? Reset your code to the baseline state first:
+
+```bash
+git checkout -- templates/ app.py
+```
+
+This reverts:
+- Template changes (HTMX attributes, fragments)
+- Server route modifications
+
+:::tip[Ready for Datastar?]
+After resetting, head to [Part III: Datastar](/workshop-1001/part-3/) to implement the same features using Server-Sent Events.
+:::

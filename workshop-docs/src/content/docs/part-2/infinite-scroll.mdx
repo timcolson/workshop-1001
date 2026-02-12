@@ -41,12 +41,12 @@ You'll re-use the existing paging server logic, combined with HTMX attributes:
     Open `templates/recipe_list_items.html` and add the following at the end
 
     ```html title="templates/recipe_list_items.html" ins={1-8}
-    {% if page < total_pages %} 
+    {% if page < total_pages %}
     <li>
         <span hx-target="closest li"
         hx-trigger="intersect once"
         hx-swap="outerHTML"
-        hx-get="{{ url_for('recipes_li', page=page+1) }}">Loading More…</span>
+        hx-get="{{ url_for('list_recipes', page=page+1, fragment=1) }}">Loading More…</span>
     </li>
     {% endif %}
     ```
@@ -85,6 +85,6 @@ You should now have infinite scrolling!
 3. **[Transclusion](https://en.wikipedia.org/wiki/Transclusion)**: New recipes are inserted, replacing the target `<li>` with actual content + a new trigger `<li>` element.
 4. **Repeat**: Process continues until no more pages
 
-...HTMX has [triggers](https://htmx.org/attributes/hx-trigger/) for `revealed` and `intersect`. Both those triggers deal with elements becoming visible in a viewport but there are [differences](https://htmx.org/examples/infinite-scroll/). 
+...HTMX has [triggers](https://htmx.org/attributes/hx-trigger/) for `revealed` and `intersect`. Both those triggers deal with elements becoming visible in a viewport but there are [differences](https://htmx.org/examples/infinite-scroll/).
 
-Ready to explore an alternative approach? Check out [Part III: Datastar](/workshop-1001/part-3/).
+You've completed all three HTMX upgrades! Head to [Next Steps](/workshop-1001/part-2/next-steps/) for a summary and instructions to try the Datastar approach.

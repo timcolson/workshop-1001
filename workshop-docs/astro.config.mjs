@@ -38,6 +38,7 @@ export default defineConfig({
                         { label: 'Inline Recipe Details', slug: 'part-2/inline-details' },
                         { label: 'Live Search Results', slug: 'part-2/live-search' },
                         { label: 'Infinite Scroll', slug: 'part-2/infinite-scroll' },
+                        { label: 'Next Steps', slug: 'part-2/next-steps' },
                     ],
                 },
                 {
@@ -48,6 +49,7 @@ export default defineConfig({
                         { label: 'Inline Recipe Details', slug: 'part-3/inline-details' },
                         { label: 'Live Search Results', slug: 'part-3/live-search' },
                         { label: 'Infinite Scroll', slug: 'part-3/infinite-scroll' },
+                        { label: 'Next Steps', slug: 'part-3/next-steps' },
                     ],
                 },
                 {
