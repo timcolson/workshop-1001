@@ -35,6 +35,7 @@ export default defineConfig({
                     label: 'Part II: HTMX',
                     collapsed: true,
                     items: [
+                        { label: 'Introduction', slug: 'part-2' },
                         { label: 'Inline Recipe Details', slug: 'part-2/inline-details' },
                         { label: 'Live Search Results', slug: 'part-2/live-search' },
                         { label: 'Infinite Scroll', slug: 'part-2/infinite-scroll' },

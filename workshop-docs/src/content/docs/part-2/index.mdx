@@ -1,53 +1,44 @@
 ---
-title: Upgrade with HTMX
+title: Introduction to HTMX
 description: Upgrade to a dynamic app with HTMX
 tableOfContents: false
 ---
 
-import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+With [HTMX](https://htmx.org/), you can add dynamic behavior to your web app using HTML attributes — no JavaScript required. HTMX extends HTML with attributes such as `hx-get`, `hx-target`, and `hx-trigger` that tell the browser to make requests and swap content directly in the page.
 
-You will upgrade the app to dynamically show recipe details, return live search results, and infinitely scroll the recipe list.
+## How HTMX Works
 
-## Understanding the App Structure
+1. **Add attributes** to HTML elements to define what triggers a request and where the response goes
+2. **Server returns HTML fragments** — not JSON, not a full page, just the piece that changed
+3. **HTMX swaps the fragment** into the DOM, replacing or appending content as specified
 
-Before you make changes, you need to see how the app is currently structured.
+```html title="HTMX example"
+<button hx-get="/api/data"
+        hx-target="#result"
+        hx-trigger="click">
+    Load Data
+</button>
+<div id="result"></div>
+```
 
-The recipe app is built with [Flask](https://flask.palletsprojects.com/en/stable/) which is a well-known web framework for Python:
+When clicked, HTMX sends a GET request to `/api/data` and replaces the contents of `#result` with the server's HTML response.
 
-- **`app.py`** — Main entry point with routes for home, recipe list, details, and search
-- **`models.py`** — Provides a *Recipe* data model and repository for fetching recipes
-- **`templates/`** — HTML templates that separate views from code
+## Key Concepts
 
-:::note[Log Filtering]
-You might notice `Status304Filter` in `app.py` — it simplifies log output by not recording *not modified* entries for static assets like CSS.
-:::
-
-## Routes and Templates
-
-Each route retrieves data and renders a template:
-
-- **Standalone page templates** (`home.html`, `recipe.html`, `search.html`) can include reusable *fragments*
-- **Full pages** extend a common `_layout.html` template which includes CSS and JavaScript
-- **Depending on your needs**, a route can return a full HTML page or a smaller chunk of HTML
-
-That flexibility will be important for making dynamic upgrades!
+- **`hx-get` / `hx-post`** — HTTP method and URL to request
+- **`hx-target`** — CSS selector for the element to update
+- **`hx-trigger`** — Event that initiates the request (click, input, intersect, etc.)
+- **`hx-swap`** — How to insert the response (innerHTML, outerHTML, beforeend, etc.)
+- **`HX-Request` header** — Sent automatically by HTMX so the server can detect HTMX requests and return a fragment instead of a full page
 
 ## HTMX Upgrades
 
-<CardGrid>
-  <LinkCard
-    title="Inline Recipe Details"
-    description="Display details in a side panel without page reload"
-    href="/part-2/inline-details"
-  />
-  <LinkCard
-    title="Live Search Results"
-    description="Dynamic search with debouncing"
-    href="/part-2/live-search"
-  />
-  <LinkCard
-    title="Infinite Scroll"
-    description="Load more recipes as user scrolls"
-    href="/part-2/infinite-scroll"
-  />
-</CardGrid>
+You'll implement three features using this pattern:
+
+- [Inline Recipe Details](/workshop-1001/part-2/inline-details/) — Display details in a side panel without page reload
+- [Live Search Results](/workshop-1001/part-2/live-search/) — Dynamic search with debouncing
+- [Infinite Scroll](/workshop-1001/part-2/infinite-scroll/) — Load more recipes as user scrolls
+
+:::note[Base App]
+Make sure you're starting from the base `app.py` (not `app-datastar.py`) for these HTMX implementations.
+:::

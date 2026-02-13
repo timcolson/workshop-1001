@@ -4,7 +4,6 @@ description: Upgrade to a dynamic app with HTMX
 tableOfContents: false
 ---
 
-import { LinkCard, CardGrid } from '@astrojs/starlight/components';
 import { FileTree } from '@astrojs/starlight/components';
 
 You will upgrade the app to dynamically show recipe details, return live search results, and infinitely scroll the recipe list.
@@ -18,16 +17,13 @@ The recipe app is built with [Flask](https://flask.palletsprojects.com/en/stable
 <FileTree>
 - **app.py**   - Main entry point with routes
 - models.py   - Recipe data model and repository
-- templates/        HTML templates using Jinja2  
+- templates/        HTML templates using Jinja2
     - _layout.html   Common layout code used by full pages
-    - home.html  
-    - recipe.html  
+    - home.html
+    - recipe.html
     - search.html
     - _recipe_list_items Fragment with recipe items
 </FileTree>
-In addition, we've provided end-state files. Review only if you get stuck. 
-- *`app-htmx.py` -- End-state entry point for reference.* 
-- *`templates-htmx/` -- End-state templates for reference.*   
 
 :::note[Log Filtering]
 In `app.py`, you might notice `Status304Filter` for logging. The filter declutters log output by **not** logging when static assets, such as CSS, are reported as `Not Modified (304)`.
@@ -39,31 +35,48 @@ Each route in the app performs an action, such as retrieving recipe data, and re
 
 The flexibility for routes to send back varying amounts of HTML will be important for making dynamic upgrades!
 
-- **Standalone** or _full page_ templates 
+- **Standalone** or _full page_ templates
     - Examples: `home.html`, `recipe.html`, `search.html`
     - Full pages also extend a common `_layout.html` template
 - **Layout** includes page structure, HTML heading, and common elements, such as CSS, JavaScript
 - Templates can include small reusable page fragments.
 
+## How to Run the App - SPOILERS
 
-## HTMX Upgrades
+Run the baseline app:
 
-Take a couple minutes to familiarize yourself with the code base, then move on to the **upgrades**.
+```bash title="Run the baseline app"
+flask --app app.py run --debug
+```
 
-<CardGrid>
-  <LinkCard
-    title="Inline Recipe Details"
-    description="Display details in a side panel without page reload"
-    href="/workshop-1001/part-2/inline-details/"
-  />
-  <LinkCard
-    title="Live Search Results"
-    description="Dynamic search with debouncing"
-    href="/workshop-1001/part-2/live-search"
-  />
-  <LinkCard
-    title="Infinite Scroll"
-    description="Load more recipes as user scrolls"
-    href="/workshop-1001/part-2/infinite-scroll"
-  />
-</CardGrid>
+If you get lost, or just want to run the final upgraded apps, review the code and templates suffixed with `-htmx` and `-datastar`:
+
+```bash title="Run the HTMX version"
+flask --app app-htmx.py run --debug
+```
+
+```bash title="Run the Datastar version"
+flask --app app-datastar.py run --debug
+```
+
+Each upgraded app points to its own template folder (`templates-htmx/` and `templates-datastar/`), so they run independently without any file swapping.
+
+## Choose your upgrade path...
+
+Take a couple minutes to familiarize yourself with the code base, then pick an upgrade path. You can start with either one, then reset your code and try the alternative.
+
+```bash title="Reset to baseline before switching paths"
+git checkout -- templates/ app.py
+```
+
+### [HTMX Upgrades](/workshop-1001/part-2/)
+
+- [Inline Recipe Details](/workshop-1001/part-2/inline-details/) — Display details in a side panel without page reload
+- [Live Search Results](/workshop-1001/part-2/live-search/) — Dynamic search with debouncing
+- [Infinite Scroll](/workshop-1001/part-2/infinite-scroll/) — Load more recipes as user scrolls
+
+### [Datastar Upgrades](/workshop-1001/part-3/)
+
+- [Inline Recipe Details](/workshop-1001/part-3/inline-details/) — Display details in a side panel with Datastar
+- [Live Search Results](/workshop-1001/part-3/live-search/) — Dynamic search with Datastar signals
+- [Infinite Scroll](/workshop-1001/part-3/infinite-scroll/) — Load more recipes as user scrolls with SSE
